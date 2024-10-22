@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "581103504002",
+    "project_id": "hoshan-42d9f",
+    "storage_bucket": "hoshan-42d9f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581103504002:android:d12a150d3d54570418829b",
+        "android_client_info": {
+          "package_name": "com.example.hoshan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581103504002-kb0klg3vds4qcnt5cc348d402l803jh8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hoshan",
+            "certificate_hash": "4fea29f5e9872705f5d86af453b1d77fd4134260"
+          }
+        },
+        {
+          "client_id": "581103504002-rq2manaif53ghbmrkb4e46dd56rk48o6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi2WRiOSEws1alpLitxX0zsX14rT71aPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581103504002-hu191hjb429bkaghf5osng1avitlr1hp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "581103504002-2e454pgr7fes6b94ptbt82rpfldehedq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hoshan"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
