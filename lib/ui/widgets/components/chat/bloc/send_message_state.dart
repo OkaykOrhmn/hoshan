@@ -20,8 +20,15 @@ class SendMessageLoading extends SendMessageState {
 
 class SendMessageSuccess extends SendMessageState {
   final String message;
+  final String? aiMessageId;
+  final int? chatId;
+  final String? humanMessageId;
 
-  const SendMessageSuccess(this.message);
+  const SendMessageSuccess(
+      {required this.message,
+      this.aiMessageId,
+      this.chatId,
+      this.humanMessageId});
 
   @override
   List<Object> get props => [message];

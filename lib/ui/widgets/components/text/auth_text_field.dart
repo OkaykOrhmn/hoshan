@@ -12,7 +12,8 @@ class AuthTextField extends StatefulWidget {
   final Widget? suffix;
   final Widget? error;
   final bool isPassword;
-
+  final int? minLines;
+  final int maxLines;
   const AuthTextField(
       {super.key,
       this.hintText,
@@ -22,7 +23,9 @@ class AuthTextField extends StatefulWidget {
       this.error,
       this.isPassword = false,
       this.controller,
-      this.onChange});
+      this.onChange,
+      this.minLines,
+      this.maxLines = 1});
 
   @override
   State<AuthTextField> createState() => _AuthTextFieldState();
@@ -42,6 +45,8 @@ class _AuthTextFieldState extends State<AuthTextField> {
             style: AppTextStyles.body5,
             controller: widget.controller,
             onChanged: widget.onChange,
+            minLines: widget.minLines,
+            maxLines: widget.maxLines,
             decoration: InputDecoration(
                 hintText: widget.hintText,
                 hintStyle: AppTextStyles.body5,

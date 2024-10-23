@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hoshan/data/model/ai_response_model.dart';
 import 'package:hoshan/data/repository/chatbot_repository.dart';
 import 'send_message_event.dart';
 import 'send_message_state.dart';
@@ -11,7 +14,7 @@ class SendMessageBloc extends Bloc<SendMessageEvent, SendMessageState> {
 
   static Future<void> scrollToEnd({final double? extra}) async {
     await scrollController.animateTo(
-      scrollController.position.maxScrollExtent + (extra ?? 0),
+      scrollController.position.minScrollExtent + (extra ?? 0),
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOut,
     );
@@ -22,21 +25,38 @@ class SendMessageBloc extends Bloc<SendMessageEvent, SendMessageState> {
       emit(const SendMessageLoading(''));
       onResponse.value = true;
       String result = '';
+      String? aiMessageId;
+      int? chatId;
+      String? humanMessageId;
       await scrollToEnd();
       try {
         // Call your streaming message function and yield states accordingly
         await for (String message
             in ChatbotRepository.sendMessage(event.sendMessageModel)) {
-          result += message;
+          final res = AiResponseModel.fromJson(jsonDecode(message));
+          result += res.content ?? '';
+          if (res.aiMessageId != null) {
+            aiMessageId = res.aiMessageId;
+          }
+          if (res.chatId != null) {
+            chatId = res.chatId;
+          }
+          if (res.humanMessageId != null) {
+            humanMessageId = res.humanMessageId;
+          }
           emit(SendMessageLoading(
               result)); // Yield the received message line by line
           await scrollToEnd();
         }
-        emit(SendMessageSuccess(result));
+        emit(SendMessageSuccess(
+            message: result,
+            aiMessageId: aiMessageId,
+            chatId: chatId,
+            humanMessageId: humanMessageId));
       } on DioException catch (e) {
         if (ChatbotRepository.cancelToken != null &&
             ChatbotRepository.cancelToken!.isCancelled) {
-          emit(SendMessageSuccess(result));
+          emit(SendMessageSuccess(message: result));
         } else {
           emit(SendMessageError('Error: $e'));
         }
@@ -46,7 +66,7 @@ class SendMessageBloc extends Bloc<SendMessageEvent, SendMessageState> {
       await scrollToEnd();
     });
     on<SendMessageLocal>((event, emit) async {
-      emit(SendMessageSuccess(event.sendMessageModel.query!));
+      emit(SendMessageSuccess(message: event.sendMessageModel.query!));
     });
   }
 }

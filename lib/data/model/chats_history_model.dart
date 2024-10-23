@@ -48,4 +48,13 @@ class Chats {
     }
     return data;
   }
+
+  Chats copyWith({int? id, String? title, String? createdAt, Bots? bot}) {
+    return Chats(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      createdAt: createdAt ?? this.createdAt,
+      bot: bot ?? this.bot,
+    );
+  }
 }

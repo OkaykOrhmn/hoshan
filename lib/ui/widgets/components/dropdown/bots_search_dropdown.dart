@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hoshan/core/gen/assets.gen.dart';
 
 import 'package:hoshan/data/model/bots_model.dart';
-import 'package:hoshan/ui/screens/home/chat/cubit/add_message_cubit.dart';
+import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
 import 'package:hoshan/ui/widgets/components/dropdown/cubit/all_bots_cubit.dart';
@@ -33,9 +33,9 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
           ),
           overlayScrollbarDecoration: ScrollbarThemeData(
               radius: const Radius.circular(100),
-              thumbColor: MaterialStateProperty.all(
+              thumbColor: WidgetStateProperty.all(
                   AppColors.primaryColor.defaultShade),
-              trackColor: MaterialStateProperty.all(AppColors.black[50])));
+              trackColor: WidgetStateProperty.all(AppColors.black[50])));
 
   final List<Bots> _list = [];
 
@@ -81,7 +81,7 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
                 listItemBuilder: listItemView,
                 decoration: customDropdownDecoration,
                 onChanged: (value) {
-                  AddMessageCubit.bot = value;
+                  HomeCubit.bot = value;
                 },
               ),
             );

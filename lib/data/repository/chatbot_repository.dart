@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hoshan/core/services/api/dio_service.dart';
 import 'package:hoshan/data/model/chats_history_model.dart';
+import 'package:hoshan/data/model/messages_model.dart';
 import 'package:hoshan/data/model/send_message_model.dart';
 
 class ChatbotRepository {
@@ -55,6 +56,38 @@ class ChatbotRepository {
       Response response = await _dioService.sendRequest
           .get(DioService.sendMessage, queryParameters: queryParameters);
       return ChatsHistoryModel.fromJson(response.data);
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
+  static Future<MessagesModel> getMessages({required final int id}) async {
+    try {
+      Response response = await _dioService.sendRequest.get(
+        DioService.chatHistory(id: id),
+      );
+      return MessagesModel.fromJson(response.data);
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> editChat(
+      {required final int id, required final String title}) async {
+    try {
+      final response = await _dioService.sendRequest
+          .put(DioService.editTitle(id: id), data: {"title": title});
+      return response;
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> deleteChat({required final int id}) async {
+    try {
+      final response =
+          await _dioService.sendRequest.delete(DioService.chatHistory(id: id));
+      return response;
     } catch (ex) {
       rethrow;
     }

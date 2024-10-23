@@ -60,7 +60,6 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
       ),
       shadowColor: AppColors.gray.defaultShade,
       automaticallyImplyLeading: false,
-      surfaceTintColor: Colors.transparent,
     );
   }
 

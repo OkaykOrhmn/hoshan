@@ -12,9 +12,9 @@ final class ChatsHistoryInitial extends ChatsHistoryState {}
 final class ChatsHistoryLoading extends ChatsHistoryState {}
 
 final class ChatsHistorySuccess extends ChatsHistoryState {
-  final List<Chats> chats;
+  final List<ChatsIndatesModel> chatsInDates;
 
-  const ChatsHistorySuccess({required this.chats});
+  const ChatsHistorySuccess({required this.chatsInDates});
 }
 
 final class ChatsHistoryFail extends ChatsHistoryState {}

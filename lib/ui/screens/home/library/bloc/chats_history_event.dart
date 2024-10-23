@@ -20,3 +20,15 @@ class GetArchivedChats extends ChatsHistoryEvent {
 
   const GetArchivedChats({this.search, this.date});
 }
+
+class AddChat extends ChatsHistoryEvent {
+  final Chats chats;
+
+  const AddChat({required this.chats});
+}
+
+class RemoveChat extends ChatsHistoryEvent {
+  final Chats chats;
+
+  const RemoveChat({required this.chats});
+}

@@ -158,6 +158,11 @@ class $AssetsIconOutlineGen {
   SvgGenImage get copy =>
       const SvgGenImage('assets/icon/outline/copy.svg', size: Size(16.0, 16.0));
 
+  /// File path: assets/icon/outline/direct-inbox.svg
+  SvgGenImage get directInbox =>
+      const SvgGenImage('assets/icon/outline/direct-inbox.svg',
+          size: Size(16.0, 16.0));
+
   /// File path: assets/icon/outline/dislike.svg
   SvgGenImage get dislike =>
       const SvgGenImage('assets/icon/outline/dislike.svg',
@@ -167,6 +172,10 @@ class $AssetsIconOutlineGen {
   SvgGenImage get documentCopy =>
       const SvgGenImage('assets/icon/outline/document-copy.svg',
           size: Size(19.0, 18.0));
+
+  /// File path: assets/icon/outline/edit-2.svg
+  SvgGenImage get edit2 => const SvgGenImage('assets/icon/outline/edit-2.svg',
+      size: Size(16.0, 17.0));
 
   /// File path: assets/icon/outline/element-plus.svg
   SvgGenImage get elementPlus =>
@@ -303,10 +312,19 @@ class $AssetsIconOutlineGen {
   SvgGenImage get sun =>
       const SvgGenImage('assets/icon/outline/sun.svg', size: Size(18.0, 18.0));
 
+  /// File path: assets/icon/outline/tick-circle.svg
+  SvgGenImage get tickCircle =>
+      const SvgGenImage('assets/icon/outline/tick-circle.svg',
+          size: Size(24.0, 24.0));
+
   /// File path: assets/icon/outline/tool-box.svg
   SvgGenImage get toolBox =>
       const SvgGenImage('assets/icon/outline/tool-box.svg',
           size: Size(24.0, 24.0));
+
+  /// File path: assets/icon/outline/trash.svg
+  SvgGenImage get trash => const SvgGenImage('assets/icon/outline/trash.svg',
+      size: Size(16.0, 16.0));
 
   /// List of all assets
   List<SvgGenImage> get values => [
@@ -322,8 +340,10 @@ class $AssetsIconOutlineGen {
         chart,
         coin,
         copy,
+        directInbox,
         dislike,
         documentCopy,
+        edit2,
         elementPlus,
         emojiHappy,
         emptyWalletTick,
@@ -353,7 +373,9 @@ class $AssetsIconOutlineGen {
         smsTracking,
         stopCircle,
         sun,
-        toolBox
+        tickCircle,
+        toolBox,
+        trash
       ];
 }
 

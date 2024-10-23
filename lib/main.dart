@@ -9,6 +9,7 @@ import 'package:hoshan/data/storage/shared_preferences_helper.dart';
 import 'package:hoshan/firebase_options.dart';
 import 'package:hoshan/ui/screens/splash/cubit/user_info_cubit.dart';
 import 'package:hoshan/ui/theme/colors.dart';
+import 'package:hoshan/ui/widgets/components/chat/bloc/send_message_bloc.dart';
 
 @pragma('vm:entry-point')
 Future<void> _onBackgroundMessage(RemoteMessage message) async {}
@@ -31,6 +32,9 @@ void main() async {
       BlocProvider<UserInfoCubit>(
         create: (context) => UserInfoCubit(),
       ),
+      BlocProvider(
+        create: (context) => SendMessageBloc(),
+      )
     ],
     child: const MyApp(),
   ));
@@ -50,8 +54,12 @@ class MyApp extends StatelessWidget {
       initialRoute: Routes.main,
       onGenerateRoute: Routes.routeGenerator,
       theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+              surfaceTintColor: Colors.white, backgroundColor: Colors.white),
           scaffoldBackgroundColor: AppColors.gray[200],
           primaryColor: AppColors.primaryColor.defaultShade,
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: AppColors.primaryColor.defaultShade),
           popupMenuTheme: const PopupMenuThemeData(
               surfaceTintColor: Colors.transparent, color: Colors.white),
           bottomSheetTheme: const BottomSheetThemeData(

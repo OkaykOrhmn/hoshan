@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hoshan/ui/screens/auth/auth_page.dart';
 import 'package:hoshan/ui/screens/auth/cubit/auth_screens_cubit.dart';
-import 'package:hoshan/ui/screens/home/chat/cubit/add_message_cubit.dart';
+import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/home_page.dart';
+import 'package:hoshan/ui/screens/home/library/bloc/chats_history_bloc.dart';
 import 'package:hoshan/ui/screens/on_boarding/on_boarding_page.dart';
 import 'package:hoshan/ui/screens/setting/edit_profile.dart';
 import 'package:hoshan/ui/screens/setting/my_account_page.dart';
@@ -38,8 +39,11 @@ class Routes {
           case home:
             return MultiBlocProvider(
               providers: [
-                BlocProvider<AddMessageCubit>(
-                    create: (context) => AddMessageCubit())
+                BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
+                BlocProvider<ChatsHistoryBloc>(
+                  create: (context) =>
+                      ChatsHistoryBloc()..add(const GetAllChats()),
+                ),
               ],
               child: const HomePage(),
             );

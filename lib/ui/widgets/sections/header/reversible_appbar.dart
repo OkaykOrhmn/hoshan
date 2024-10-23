@@ -22,7 +22,6 @@ class ReversibleAppbar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       automaticallyImplyLeading: false,
-      surfaceTintColor: Colors.transparent,
       leading: InkWell(
         onTap: () {
           Navigator.pop(context);
