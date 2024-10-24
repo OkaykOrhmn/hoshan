@@ -1,4 +1,4 @@
-import 'package:hoshan/data/model/chats_history_model.dart';
+import 'package:hoshan/data/model/ai/chats_history_model.dart';
 
 class ChatsIndatesModel {
   final String title;

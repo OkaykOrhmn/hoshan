@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../../../data/model/send_message_model.dart';
+import '../../../../../data/model/ai/send_message_model.dart';
 
 abstract class SendMessageEvent extends Equatable {
   const SendMessageEvent();
@@ -10,12 +10,12 @@ abstract class SendMessageEvent extends Equatable {
 }
 
 class SendMessageRequest extends SendMessageEvent {
-  final SendMessageModel sendMessageModel;
+  final SendMessageModel request;
 
-  const SendMessageRequest(this.sendMessageModel);
+  const SendMessageRequest({required this.request});
 
   @override
-  List<Object> get props => [sendMessageModel];
+  List<Object> get props => [request];
 }
 
 class SendMessageLocal extends SendMessageEvent {

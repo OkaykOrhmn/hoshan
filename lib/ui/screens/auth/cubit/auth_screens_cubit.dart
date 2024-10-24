@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hoshan/data/model/auth_screens_enum.dart';
+import 'package:hoshan/data/model/auth/auth_screens_enum.dart';
 
 class AuthScreensCubit extends Cubit<AuthScreens> {
   AuthScreensCubit() : super(AuthScreens.mobile);

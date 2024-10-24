@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hoshan/data/model/auth_screens_enum.dart';
+import 'package:hoshan/data/model/auth/auth_screens_enum.dart';
 import 'package:hoshan/ui/screens/auth/cubit/auth_screens_cubit.dart';
 import 'package:hoshan/ui/screens/auth/register/bloc/register_bloc.dart';
 import 'package:hoshan/ui/theme/colors.dart';

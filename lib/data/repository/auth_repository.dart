@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:hoshan/core/services/api/dio_service.dart';
-import 'package:hoshan/data/model/login_model.dart';
-import 'package:hoshan/data/model/user_info_model.dart';
+import 'package:hoshan/data/model/auth/login_model.dart';
+import 'package:hoshan/data/model/auth/user_info_model.dart';
 
 class AuthRepository {
   static final DioService _dioService = DioService();

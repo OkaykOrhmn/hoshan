@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hoshan/core/gen/assets.gen.dart';
 
-import 'package:hoshan/data/model/bots_model.dart';
+import 'package:hoshan/data/model/ai/bots_model.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
@@ -33,8 +33,8 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
           ),
           overlayScrollbarDecoration: ScrollbarThemeData(
               radius: const Radius.circular(100),
-              thumbColor: WidgetStateProperty.all(
-                  AppColors.primaryColor.defaultShade),
+              thumbColor:
+                  WidgetStateProperty.all(AppColors.primaryColor.defaultShade),
               trackColor: WidgetStateProperty.all(AppColors.black[50])));
 
   final List<Bots> _list = [];

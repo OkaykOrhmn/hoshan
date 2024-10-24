@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:hoshan/core/services/api/dio_service.dart';
-import 'package:hoshan/data/model/bots_model.dart';
+import 'package:hoshan/data/model/ai/bots_model.dart';
 
 class BotRepository {
   static final DioService _dioService = DioService();

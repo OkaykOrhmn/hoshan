@@ -9,7 +9,6 @@ import 'package:hoshan/data/storage/shared_preferences_helper.dart';
 import 'package:hoshan/firebase_options.dart';
 import 'package:hoshan/ui/screens/splash/cubit/user_info_cubit.dart';
 import 'package:hoshan/ui/theme/colors.dart';
-import 'package:hoshan/ui/widgets/components/chat/bloc/send_message_bloc.dart';
 
 @pragma('vm:entry-point')
 Future<void> _onBackgroundMessage(RemoteMessage message) async {}
@@ -32,9 +31,6 @@ void main() async {
       BlocProvider<UserInfoCubit>(
         create: (context) => UserInfoCubit(),
       ),
-      BlocProvider(
-        create: (context) => SendMessageBloc(),
-      )
     ],
     child: const MyApp(),
   ));

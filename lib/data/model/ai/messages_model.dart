@@ -1,4 +1,4 @@
-import 'package:hoshan/data/model/bots_model.dart';
+import 'package:hoshan/data/model/ai/bots_model.dart';
 
 class MessagesModel {
   int? id;
@@ -44,7 +44,7 @@ class Messages {
   bool? fromBot;
 
   Messages({this.id, this.content, this.role}) {
-    fromBot = (role == 'bot');
+    fromBot = (role == 'ai');
   }
 
   Messages.fromJson(Map<String, dynamic> json) {
@@ -60,5 +60,17 @@ class Messages {
     data['content'] = content;
     data['role'] = role;
     return data;
+  }
+
+  Messages copyWith({
+    String? id,
+    String? content,
+    String? role,
+  }) {
+    return Messages(
+      id: id ?? this.id,
+      content: content ?? this.content,
+      role: role ?? this.role,
+    );
   }
 }

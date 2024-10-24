@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hoshan/core/gen/assets.gen.dart';
 import 'package:hoshan/core/utils/date_time.dart';
-import 'package:hoshan/data/model/chats_history_model.dart';
+import 'package:hoshan/data/model/ai/chats_history_model.dart';
 import 'package:hoshan/data/model/popup_menu_model.dart';
+import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/library/bloc/chats_history_bloc.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
@@ -164,13 +165,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
         builder: (context, state) {
           return InkWell(
             onTap: () async {
-              // HomeCubit.indexed.value = 0;
-              // HomeCubit.chatId.value = -1;
+              HomeCubit.indexed.value = 0;
+              HomeCubit.chatId.value = -1;
 
-              // final messages =
-              //     await context.read<HomeCubit>().getItems(chat.id!);
-              // HomeCubit.bot = messages.bot;
-              // HomeCubit.chatId.value = messages.id;
+              await context.read<HomeCubit>().getItems(id: chat.id!);
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

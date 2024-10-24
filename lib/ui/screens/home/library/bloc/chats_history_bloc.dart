@@ -3,8 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hoshan/core/utils/date_time.dart';
-import 'package:hoshan/data/model/chats_history_model.dart';
-import 'package:hoshan/data/model/chats_indates_model.dart';
+import 'package:hoshan/data/model/ai/chats_history_model.dart';
+import 'package:hoshan/data/model/ai/chats_indates_model.dart';
 import 'package:hoshan/data/repository/chatbot_repository.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 
@@ -44,10 +44,13 @@ class ChatsHistoryBloc extends Bloc<ChatsHistoryEvent, ChatsHistoryState> {
       }
 
       final List<ChatsIndatesModel> chatsInDates = [
-        ChatsIndatesModel(title: 'امروز', chats: todayChats),
-        ChatsIndatesModel(title: 'دیروز', chats: yesterdayChats),
-        ChatsIndatesModel(title: '‌هفته گذشته', chats: weekChats),
-        ChatsIndatesModel(title: 'ماه های اخیر', chats: otherChats),
+        ChatsIndatesModel(title: 'امروز', chats: todayChats.reversed.toList()),
+        ChatsIndatesModel(
+            title: 'دیروز', chats: yesterdayChats.reversed.toList()),
+        ChatsIndatesModel(
+            title: '‌هفته گذشته', chats: weekChats.reversed.toList()),
+        ChatsIndatesModel(
+            title: 'ماه های اخیر', chats: otherChats.reversed.toList()),
       ];
 
       ChatsHistoryBloc.chatsInDates.addAll(chatsInDates);
@@ -95,7 +98,7 @@ class ChatsHistoryBloc extends Bloc<ChatsHistoryEvent, ChatsHistoryState> {
       }
 
       if (event is AddChat) {
-        chatsInDates.first.chats.add(event.chats);
+        chatsInDates.first.chats.insert(0, event.chats);
         emit(ChatsHistoryLoading());
 
         emit(ChatsHistorySuccess(chatsInDates: chatsInDates));

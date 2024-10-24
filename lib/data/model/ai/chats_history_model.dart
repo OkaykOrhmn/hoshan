@@ -1,4 +1,4 @@
-import 'package:hoshan/data/model/bots_model.dart';
+import 'package:hoshan/data/model/ai/bots_model.dart';
 
 class ChatsHistoryModel {
   List<Chats>? chats;

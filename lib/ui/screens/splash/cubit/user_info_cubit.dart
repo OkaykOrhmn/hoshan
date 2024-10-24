@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hoshan/data/model/user_info_model.dart';
+import 'package:hoshan/data/model/auth/user_info_model.dart';
 import 'package:hoshan/data/repository/auth_repository.dart';
 
 part 'user_info_state.dart';

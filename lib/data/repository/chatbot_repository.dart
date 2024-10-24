@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hoshan/core/services/api/dio_service.dart';
-import 'package:hoshan/data/model/chats_history_model.dart';
-import 'package:hoshan/data/model/messages_model.dart';
-import 'package:hoshan/data/model/send_message_model.dart';
+import 'package:hoshan/data/model/ai/chats_history_model.dart';
+import 'package:hoshan/data/model/ai/messages_model.dart';
+import 'package:hoshan/data/model/ai/send_message_model.dart';
 
 class ChatbotRepository {
   static final DioService _dioService = DioService();
@@ -30,7 +30,11 @@ class ChatbotRepository {
         if (kDebugMode) {
           print(utf8.decode(value));
         }
-        yield utf8.decode(value);
+        yield utf8
+            .decode(value)
+            .replaceAll('}{', ' } \n { ')
+            .replaceAll('}', ' } ')
+            .replaceAll('{', ' { ');
       }
     } catch (e) {
       yield '';
