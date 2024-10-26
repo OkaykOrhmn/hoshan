@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hoshan/core/services/api/dio_service.dart';
 import 'package:hoshan/data/model/ai/chats_history_model.dart';
 import 'package:hoshan/data/model/ai/messages_model.dart';
+import 'package:hoshan/data/model/ai/related_questions_model.dart';
 import 'package:hoshan/data/model/ai/send_message_model.dart';
 
 class ChatbotRepository {
@@ -22,10 +23,11 @@ class ChatbotRepository {
       Response<ResponseBody> response =
           await _dioService.sendRequestStream.post<ResponseBody>(
         DioService.sendMessage,
-        data: sendMessageModel.toJson(),
+        data: FormData.fromMap(
+          sendMessageModel.toJson(),
+        ),
         cancelToken: cancelToken,
       );
-
       await for (var value in response.data!.stream) {
         if (kDebugMode) {
           print(utf8.decode(value));
@@ -92,6 +94,48 @@ class ChatbotRepository {
       final response =
           await _dioService.sendRequest.delete(DioService.chatHistory(id: id));
       return response;
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> likedMessage(
+      {required final int chatId,
+      required final String messageId,
+      required final bool? like}) async {
+    try {
+      final response = await _dioService.sendRequest.put(
+          DioService.likeMessage(id: chatId, messageId: messageId),
+          data: {"like": like});
+      return response;
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
+  static Future<Response> deleteMessage(
+      {required final int chatId, required final String messageId}) async {
+    try {
+      final response = await _dioService.sendRequest.delete(
+        DioService.messageDelete(id: chatId, messageId: messageId),
+      );
+      return response;
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
+  static Future<RelatedQuestionsModel> getRelatedQuestions(
+      {required final int chatId,
+      required final String messageId,
+      required final String content}) async {
+    try {
+      final response = await _dioService.sendRequest.post(
+          DioService.relatedQuestions(
+            id: chatId,
+          ),
+          data: {"id": messageId, "content": content});
+      return RelatedQuestionsModel.fromJson(response.data);
     } catch (ex) {
       rethrow;
     }

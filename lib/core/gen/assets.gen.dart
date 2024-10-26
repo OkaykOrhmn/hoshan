@@ -59,6 +59,14 @@ class $AssetsImageGen {
 class $AssetsIconBoldGen {
   const $AssetsIconBoldGen();
 
+  /// File path: assets/icon/bold/dislike.svg
+  SvgGenImage get dislike =>
+      const SvgGenImage('assets/icon/bold/dislike.svg', size: Size(24.0, 24.0));
+
+  /// File path: assets/icon/bold/like.svg
+  SvgGenImage get like =>
+      const SvgGenImage('assets/icon/bold/like.svg', size: Size(24.0, 24.0));
+
   /// File path: assets/icon/bold/profile.svg
   SvgGenImage get profile =>
       const SvgGenImage('assets/icon/bold/profile.svg', size: Size(80.0, 80.0));
@@ -72,7 +80,7 @@ class $AssetsIconBoldGen {
       const SvgGenImage('assets/icon/bold/setting.svg', size: Size(17.0, 17.0));
 
   /// List of all assets
-  List<SvgGenImage> get values => [profile, send, setting];
+  List<SvgGenImage> get values => [dislike, like, profile, send, setting];
 }
 
 class $AssetsIconBulkGen {
@@ -228,6 +236,11 @@ class $AssetsIconOutlineGen {
       const SvgGenImage('assets/icon/outline/magicpen.svg',
           size: Size(16.0, 16.0));
 
+  /// File path: assets/icon/outline/message-question.svg
+  SvgGenImage get messageQuestion =>
+      const SvgGenImage('assets/icon/outline/message-question.svg',
+          size: Size(16.0, 16.0));
+
   /// File path: assets/icon/outline/messages.svg
   SvgGenImage get messages =>
       const SvgGenImage('assets/icon/outline/messages.svg',
@@ -355,6 +368,7 @@ class $AssetsIconOutlineGen {
         lock,
         login,
         magicpen,
+        messageQuestion,
         messages,
         microphoneChat,
         mobile,

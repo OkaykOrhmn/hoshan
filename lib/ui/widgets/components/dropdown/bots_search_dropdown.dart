@@ -51,42 +51,35 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: BlocProvider<AllBotsCubit>(
-        create: (context) {
-          final allBots = AllBotsCubit();
-          allBots.getAllBots();
-          return allBots;
+      child: BlocConsumer<AllBotsCubit, AllBotsState>(
+        listener: (context, state) {
+          if (state is AllBotsSuccess) {
+            _list.addAll(state.bots);
+          }
         },
-        child: BlocConsumer<AllBotsCubit, AllBotsState>(
-          listener: (context, state) {
-            if (state is AllBotsSuccess) {
-              _list.addAll(state.bots);
-            }
-          },
-          builder: (context, state) {
-            if (state is AllBotsFail) {
-              return const SizedBox();
-            }
-            return DefaultPlaceHolder(
-              enabled: state is AllBotsLoading,
-              child: CustomDropdown<Bots>.searchRequest(
-                items: _list,
-                futureRequest: _getFakeRequestData,
-                searchHintText: 'جستجو در بات ها',
-                overlayHeight: MediaQuery.sizeOf(context).height / 2.2,
-                canCloseOutsideBounds: false,
-                excludeSelected: false,
-                headerBuilder: botView,
-                hintBuilder: hintView,
-                listItemBuilder: listItemView,
-                decoration: customDropdownDecoration,
-                onChanged: (value) {
-                  HomeCubit.bot = value;
-                },
-              ),
-            );
-          },
-        ),
+        builder: (context, state) {
+          if (state is AllBotsFail) {
+            return const SizedBox();
+          }
+          return DefaultPlaceHolder(
+            enabled: state is AllBotsLoading,
+            child: CustomDropdown<Bots>.searchRequest(
+              items: _list,
+              futureRequest: _getFakeRequestData,
+              searchHintText: 'جستجو در بات ها',
+              overlayHeight: MediaQuery.sizeOf(context).height / 2.2,
+              canCloseOutsideBounds: false,
+              excludeSelected: false,
+              headerBuilder: botView,
+              hintBuilder: hintView,
+              listItemBuilder: listItemView,
+              decoration: customDropdownDecoration,
+              onChanged: (value) {
+                HomeCubit.bot = value;
+              },
+            ),
+          );
+        },
       ),
     );
   }

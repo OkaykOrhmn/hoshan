@@ -86,7 +86,20 @@ class _UtilizationReportPageState extends State<UtilizationReportPage> {
                 ],
               ),
             ),
-            const PersianDatePicker()
+            Container(
+                width: MediaQuery.sizeOf(context).width,
+                margin: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppColors.black.defaultShade.withOpacity(0.1),
+                          blurRadius: 10,
+                          spreadRadius: 0)
+                    ]),
+                child: const PersianDatePicker())
           ],
         ),
       ),

@@ -79,15 +79,18 @@ class _SplashPageState extends State<SplashPage> {
                   child: state is UserInfoConnectionError
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: LoadingButton(
-                            width: MediaQuery.sizeOf(context).width,
-                            height: 46,
-                            onPressed: () =>
-                                context.read<UserInfoCubit>().getUserInfo(),
-                            child: Text(
-                              'تلاش مجدد',
-                              style: AppTextStyles.body4.copyWith(
-                                  color: AppColors.black.defaultShade),
+                          child: Center(
+                            child: LoadingButton(
+                              width: MediaQuery.sizeOf(context).width / 2,
+                              height: 46,
+                              radius: 10,
+                              onPressed: () =>
+                                  context.read<UserInfoCubit>().getUserInfo(),
+                              child: Text(
+                                'تلاش مجدد',
+                                style: AppTextStyles.body4.copyWith(
+                                    color: AppColors.black.defaultShade),
+                              ),
                             ),
                           ),
                         )

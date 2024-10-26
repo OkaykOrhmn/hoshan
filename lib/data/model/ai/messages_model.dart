@@ -41,9 +41,10 @@ class Messages {
   String? id;
   String? content;
   String? role;
+  bool? like;
   bool? fromBot;
 
-  Messages({this.id, this.content, this.role}) {
+  Messages({this.id, this.content, this.role, this.like}) {
     fromBot = (role == 'ai');
   }
 
@@ -51,6 +52,7 @@ class Messages {
     id = json['id'];
     content = json['content'];
     role = json['role'];
+    like = json['like'];
     fromBot = role == 'ai';
   }
 
@@ -59,6 +61,7 @@ class Messages {
     data['id'] = id;
     data['content'] = content;
     data['role'] = role;
+    data['like'] = like;
     return data;
   }
 
@@ -66,10 +69,12 @@ class Messages {
     String? id,
     String? content,
     String? role,
+    bool? like,
   }) {
     return Messages(
       id: id ?? this.id,
       content: content ?? this.content,
+      like: like ?? this.like,
       role: role ?? this.role,
     );
   }

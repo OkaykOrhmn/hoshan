@@ -14,12 +14,26 @@ class HomeCubit extends Cubit<List<Messages>> {
   // static List<Messages> messages = [];
   HomeCubit() : super([]);
 
-  Future<void> getItems({required int id}) async {
+  Future<List<Messages>> getItems({required int id}) async {
     final response = await ChatbotRepository.getMessages(id: id);
     final updatedList = List<Messages>.from(response.messages!);
     HomeCubit.bot = response.bot;
     HomeCubit.chatId.value = response.id;
     emit(updatedList); // Copy the current state
+    return updatedList;
+  }
+
+  Future<Messages?> getLatsHumanMessage() async {
+    final updatedList = List<Messages>.from(state);
+    Messages? messages;
+    for (var message in updatedList) {
+      if (!(message.fromBot!)) {
+        messages = message;
+        break;
+      }
+    }
+    emit(updatedList); // Copy the current state
+    return messages;
   }
 
   // Method to add an item
@@ -30,9 +44,11 @@ class HomeCubit extends Cubit<List<Messages>> {
   }
 
   // Method to remove an item
-  void removeItem(Messages message) {
+  void removeItem(Messages message) async {
     final updatedList = List<Messages>.from(state); // Copy the current state
     if (updatedList.isNotEmpty) {
+      ChatbotRepository.deleteMessage(
+          chatId: HomeCubit.chatId.value!, messageId: message.id!);
       updatedList.remove(message);
     }
     emit(updatedList); // Emit the new state
@@ -46,13 +62,14 @@ class HomeCubit extends Cubit<List<Messages>> {
     emit(updatedList); // Emit the new state
   }
 
-  void changeItem(Messages oldMessage, Messages newMessage) {
+  Messages changeItem(Messages oldMessage, Messages newMessage) {
     final updatedList = List<Messages>.from(state); // Copy the current state
     if (updatedList.isNotEmpty) {
       final index = updatedList.indexOf(oldMessage);
       updatedList[index] = newMessage;
     }
-    emit(updatedList); // Emit the new state
+    emit(updatedList);
+    return newMessage; // Emit the new state
   }
 
   void changeHumanItemId(dynamic newMessageId) {

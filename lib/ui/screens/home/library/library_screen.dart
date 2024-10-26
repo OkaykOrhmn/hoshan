@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use_from_same_package
+// ignore_for_file: deprecated_member_use_from_same_package, use_build_context_synchronously
 
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +7,13 @@ import 'package:hoshan/core/gen/assets.gen.dart';
 import 'package:hoshan/core/utils/date_time.dart';
 import 'package:hoshan/data/model/ai/chats_history_model.dart';
 import 'package:hoshan/data/model/popup_menu_model.dart';
+import 'package:hoshan/ui/screens/home/chat/bloc/related_questions_bloc.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/library/bloc/chats_history_bloc.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
 import 'package:hoshan/ui/screens/home/library/cubit/chat_row_edit_cubit.dart';
+import 'package:hoshan/ui/widgets/components/dialog/dialog_handler.dart';
 import 'package:hoshan/ui/widgets/components/text/auth_text_field.dart';
 import 'package:hoshan/ui/widgets/components/text/search_text_field.dart';
 import 'package:hoshan/ui/widgets/sections/empty/empty_states.dart';
@@ -38,9 +40,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24.0),
           child: SearchTextField(
-            suffixIcon: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Assets.icon.outline.filter.svg(),
+            suffixIcon: InkWell(
+              onTap: () async {
+                await DialogHandler(context: context).showDatePicker(
+                  dateCounts: 1,
+                  onConfirm: (p0) {},
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Assets.icon.outline.filter.svg(),
+              ),
             ),
             onChanged: (searchText) {
               if (searchText.isEmpty) {
@@ -169,6 +179,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
               HomeCubit.chatId.value = -1;
 
               await context.read<HomeCubit>().getItems(id: chat.id!);
+              final humanMessage =
+                  await context.read<HomeCubit>().getLatsHumanMessage();
+              if (humanMessage != null) {
+                context.read<RelatedQuestionsBloc>().add(GetAllRelatedQuestions(
+                    chatId: HomeCubit.chatId.value!,
+                    messageId: humanMessage.id!,
+                    content: humanMessage.content!));
+              }
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -215,9 +233,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                           break;
                                         case 3:
                                           // widget.onDelete.call();
-                                          context
-                                              .read<ChatsHistoryBloc>()
-                                              .add(RemoveChat(chats: chat));
+                                          await DialogHandler(context: context)
+                                              .showDeleteItem(
+                                            title: 'چت',
+                                            onConfirm: () {
+                                              context
+                                                  .read<ChatsHistoryBloc>()
+                                                  .add(RemoveChat(chats: chat));
+                                            },
+                                          );
                                           break;
                                         default:
                                       }

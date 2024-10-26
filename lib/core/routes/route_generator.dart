@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hoshan/ui/screens/auth/auth_page.dart';
 import 'package:hoshan/ui/screens/auth/cubit/auth_screens_cubit.dart';
+import 'package:hoshan/ui/screens/home/chat/bloc/related_questions_bloc.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/home_page.dart';
 import 'package:hoshan/ui/screens/home/library/bloc/chats_history_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:hoshan/ui/screens/setting/my_account_page.dart';
 import 'package:hoshan/ui/screens/setting/setting_page.dart';
 import 'package:hoshan/ui/screens/setting/utilization_report_page.dart';
 import 'package:hoshan/ui/screens/splash/splash_page.dart';
+import 'package:hoshan/ui/widgets/components/dropdown/cubit/all_bots_cubit.dart';
 
 class Routes {
   static const String main = '/';
@@ -39,10 +41,20 @@ class Routes {
           case home:
             return MultiBlocProvider(
               providers: [
+                BlocProvider<AllBotsCubit>(
+                  create: (context) {
+                    final allBots = AllBotsCubit();
+                    allBots.getAllBots();
+                    return allBots;
+                  },
+                ),
                 BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
                 BlocProvider<ChatsHistoryBloc>(
                   create: (context) =>
                       ChatsHistoryBloc()..add(const GetAllChats()),
+                ),
+                BlocProvider<RelatedQuestionsBloc>(
+                  create: (context) => RelatedQuestionsBloc(),
                 ),
               ],
               child: const HomePage(),

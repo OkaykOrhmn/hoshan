@@ -7,6 +7,7 @@ import 'package:hoshan/core/gen/assets.gen.dart';
 import 'package:hoshan/core/services/file_manager/pick_file_services.dart';
 import 'package:hoshan/data/model/home_navbar_model.dart';
 import 'package:hoshan/data/model/ai/messages_model.dart';
+import 'package:hoshan/ui/screens/home/chat/bloc/related_questions_bloc.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/library/library_screen.dart';
 import 'package:hoshan/ui/screens/home/chat/chat_screen.dart';
@@ -110,6 +111,9 @@ class _HomePageState extends State<HomePage> {
                         .addItem(Messages(role: 'ai', content: message.text));
 
                     message.clear();
+                    context
+                        .read<RelatedQuestionsBloc>()
+                        .add(ClearAllRelatedQuestions());
                   }
                 },
               ),

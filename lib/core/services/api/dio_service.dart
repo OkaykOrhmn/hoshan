@@ -23,10 +23,10 @@ class DioService {
   static String relatedQuestions({required final int id}) =>
       '/chatbot/$id/related_questions'; //POST q{id};
   static String messageDelete(
-          {required final int id, required final int messageId}) =>
+          {required final int id, required final String messageId}) =>
       '/chatbot/$id/message/$messageId'; //DELETE q{id} q{message_id}
   static String likeMessage(
-          {required final int id, required final int messageId}) =>
+          {required final int id, required final String messageId}) =>
       '/chatbot/$id/message/$messageId/feedback'; //PUT q{id} q{message_id}
   //bot
   static String getAllBots = '/bot/'; //GET q{string:serach}
