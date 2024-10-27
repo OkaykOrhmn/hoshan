@@ -15,12 +15,19 @@ class HomeCubit extends Cubit<List<Messages>> {
   HomeCubit() : super([]);
 
   Future<List<Messages>> getItems({required int id}) async {
-    final response = await ChatbotRepository.getMessages(id: id);
-    final updatedList = List<Messages>.from(response.messages!);
-    HomeCubit.bot = response.bot;
-    HomeCubit.chatId.value = response.id;
-    emit(updatedList); // Copy the current state
-    return updatedList;
+    try {
+      final response = await ChatbotRepository.getMessages(id: id);
+      final updatedList = List<Messages>.from(response.messages!);
+      HomeCubit.bot = response.bot;
+      HomeCubit.chatId.value = response.id;
+      emit(updatedList); // Copy the current state
+    } catch (e) {
+      HomeCubit.bot = null;
+      HomeCubit.chatId.value = -3;
+      emit([]); // Copy the current state
+    }
+
+    return state;
   }
 
   Future<Messages?> getLatsHumanMessage() async {

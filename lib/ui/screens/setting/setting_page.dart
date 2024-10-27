@@ -7,10 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hoshan/core/gen/assets.gen.dart';
 import 'package:hoshan/core/routes/route_generator.dart';
+import 'package:hoshan/core/services/api/dio_service.dart';
 import 'package:hoshan/ui/screens/splash/cubit/user_info_cubit.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
 import 'package:hoshan/ui/widgets/components/animations/animated_visibility.dart';
+import 'package:hoshan/ui/widgets/components/image/network_image.dart';
 import 'package:hoshan/ui/widgets/components/snackbar/snackbar_handler.dart';
 import 'package:hoshan/ui/widgets/components/switch/lite_rolling_switch.dart';
 import 'package:hoshan/ui/widgets/sections/header/reversible_appbar.dart';
@@ -62,7 +64,6 @@ class _SettingPageState extends State<SettingPage> {
                         Container(
                           width: 78,
                           height: 78,
-                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                               color: AppColors.gray[300],
                               shape: BoxShape.circle,
@@ -72,10 +73,17 @@ class _SettingPageState extends State<SettingPage> {
                                     color: const Color(0xff4d4d4d)
                                         .withOpacity(0.4))
                               ]),
-                          child: UserInfoCubit.userInfoModel.image != null
-                              ? Image.network(
-                                  UserInfoCubit.userInfoModel.image!)
-                              : Assets.icon.outline.profile.svg(),
+                          child: ClipOval(
+                            child: UserInfoCubit.userInfoModel.image != null
+                                ? ImageNetwork(
+                                    url: DioService.baseURL +
+                                        UserInfoCubit.userInfoModel.image!,
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Assets.icon.outline.profile.svg(),
+                                  ),
+                          ),
                         ),
                         const SizedBox(
                           width: 12,

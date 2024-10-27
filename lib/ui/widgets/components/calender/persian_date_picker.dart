@@ -12,6 +12,7 @@ class PersianDatePicker extends StatefulWidget {
   final Function()? onDismise;
   final bool hasConfirm;
   final int? dateCounts;
+  final List<Jalali>? selectedDates;
   const PersianDatePicker({
     super.key,
     this.dateHeight = 52,
@@ -20,6 +21,7 @@ class PersianDatePicker extends StatefulWidget {
     this.onConfirm,
     this.hasConfirm = true,
     this.onDismise,
+    this.selectedDates,
   });
 
   @override
@@ -34,7 +36,7 @@ class _PersianDatePickerState extends State<PersianDatePicker> {
   final CarouselSliderControllerImpl controllerImpl =
       CarouselSliderControllerImpl();
 
-  final List<Jalali> selectedDates = [];
+  late final List<Jalali> selectedDates = widget.selectedDates ?? [];
 
   List<String> persianMonths = [
     "فروردین",
@@ -179,6 +181,7 @@ class _PersianDatePickerState extends State<PersianDatePicker> {
                                   int.parse(persianYearSelected),
                                   persianMonthIndex,
                                   days[index]);
+                              if (date > Jalali.now()) return;
                               if (selectedDates.contains(date)) {
                                 selectedDates.remove(date);
                               } else {

@@ -51,81 +51,84 @@ class _ChatScreenState extends State<ChatScreen> {
               if (state is RelatedQuestionsSuccess &&
                   state.relatedQuestionsModel.questions != null &&
                   state.relatedQuestionsModel.questions!.isNotEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                ':سوالات مرتبط',
-                                style: AppTextStyles.body4.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primaryColor.defaultShade),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Assets.icon.outline.messageQuestion.svg(),
-                            ],
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount:
-                            state.relatedQuestionsModel.questions!.length,
-                        itemBuilder: (context, index) {
-                          final question =
-                              state.relatedQuestionsModel.questions![index];
-                          return InkWell(
-                            onTap: () {
-                              context.read<HomeCubit>().addItem(
-                                  Messages(content: question, role: 'human'));
-                              context.read<HomeCubit>().addItem(
-                                  Messages(role: 'ai', content: question));
-
-                              context
-                                  .read<RelatedQuestionsBloc>()
-                                  .add(ClearAllRelatedQuestions());
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                return Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          children: [
+                            Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0),
-                                  child: Text(
-                                    question,
-                                    style: AppTextStyles.body5
-                                        .copyWith(color: AppColors.gray[900]),
-                                  ),
+                                Assets.icon.outline.messageQuestion.svg(),
+                                const SizedBox(
+                                  width: 4,
                                 ),
-                                if (index !=
-                                    state.relatedQuestionsModel.questions!
-                                            .length -
-                                        1)
+                                Text(
+                                  'سوالات مرتبط:',
+                                  style: AppTextStyles.body4.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          AppColors.primaryColor.defaultShade),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount:
+                              state.relatedQuestionsModel.questions!.length,
+                          itemBuilder: (context, index) {
+                            final question =
+                                state.relatedQuestionsModel.questions![index];
+                            return InkWell(
+                              onTap: () {
+                                context.read<HomeCubit>().addItem(
+                                    Messages(content: question, role: 'human'));
+                                context.read<HomeCubit>().addItem(
+                                    Messages(role: 'ai', content: question));
+
+                                context
+                                    .read<RelatedQuestionsBloc>()
+                                    .add(ClearAllRelatedQuestions());
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 4.0),
-                                    child: Divider(
-                                      color: AppColors.gray.defaultShade,
+                                        horizontal: 16.0),
+                                    child: Text(
+                                      question,
+                                      style: AppTextStyles.body5
+                                          .copyWith(color: AppColors.gray[900]),
                                     ),
-                                  )
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                                  ),
+                                  if (index !=
+                                      state.relatedQuestionsModel.questions!
+                                              .length -
+                                          1)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0),
+                                      child: Divider(
+                                        color: AppColors.gray.defaultShade,
+                                      ),
+                                    )
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }

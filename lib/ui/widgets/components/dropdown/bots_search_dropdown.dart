@@ -19,7 +19,7 @@ class BotSearchDropdown extends StatefulWidget {
 }
 
 class _BotSearchDropdownState extends State<BotSearchDropdown> {
-  final CustomDropdownDecoration customDropdownDecoration =
+  late final CustomDropdownDecoration customDropdownDecoration =
       CustomDropdownDecoration(
           expandedFillColor: AppColors.gray[200],
           closedFillColor: const Color(0xffE0ECFF),
@@ -31,11 +31,7 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
             Icons.arrow_drop_up_rounded,
             color: AppColors.primaryColor.defaultShade,
           ),
-          overlayScrollbarDecoration: ScrollbarThemeData(
-              radius: const Radius.circular(100),
-              thumbColor:
-                  WidgetStateProperty.all(AppColors.primaryColor.defaultShade),
-              trackColor: WidgetStateProperty.all(AppColors.black[50])));
+          overlayScrollbarDecoration: Theme.of(context).scrollbarTheme);
 
   final List<Bots> _list = [];
 
@@ -52,12 +48,11 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: BlocConsumer<AllBotsCubit, AllBotsState>(
-        listener: (context, state) {
+        listener: (context, state) {},
+        builder: (context, state) {
           if (state is AllBotsSuccess) {
             _list.addAll(state.bots);
           }
-        },
-        builder: (context, state) {
           if (state is AllBotsFail) {
             return const SizedBox();
           }

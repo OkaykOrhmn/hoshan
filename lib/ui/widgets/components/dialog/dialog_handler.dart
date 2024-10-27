@@ -10,10 +10,11 @@ class DialogHandler {
 
   DialogHandler({required this.context});
 
-  Future<void> showDatePicker({
-    final Function(List<Jalali>)? onConfirm,
-    final int? dateCounts,
-  }) async {
+  Future<void> showDatePicker(
+      {final Function(List<Jalali>)? onConfirm,
+      final Function()? onDismise,
+      final int? dateCounts,
+      final List<Jalali>? selectedDates}) async {
     await showDialog(
       context: context,
       builder: (context) {
@@ -33,10 +34,18 @@ class DialogHandler {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: PersianDatePicker(
+                    selectedDates: selectedDates,
                     dateCounts: dateCounts,
-                    onConfirm: onConfirm,
+                    onConfirm: (p0) {
+                      onConfirm?.call(p0);
+                      Navigator.pop(context);
+                    },
                     dateHeight: 32,
-                    onDismise: () => Navigator.pop(context),
+                    onDismise: () {
+                      onDismise?.call();
+
+                      Navigator.pop(context);
+                    },
                   ),
                 ),
               ],
@@ -61,6 +70,7 @@ class DialogHandler {
                 Text(
                   'از پاک کردن ${title ?? ''} مطمعن هستید؟',
                   style: AppTextStyles.headline6,
+                  textAlign: TextAlign.right,
                 ),
                 Row(
                   children: [

@@ -7,7 +7,8 @@ import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/home_page.dart';
 import 'package:hoshan/ui/screens/home/library/bloc/chats_history_bloc.dart';
 import 'package:hoshan/ui/screens/on_boarding/on_boarding_page.dart';
-import 'package:hoshan/ui/screens/setting/edit_profile.dart';
+import 'package:hoshan/ui/screens/setting/cubit/check_username_cubit.dart';
+import 'package:hoshan/ui/screens/setting/edit_profile_page.dart';
 import 'package:hoshan/ui/screens/setting/my_account_page.dart';
 import 'package:hoshan/ui/screens/setting/setting_page.dart';
 import 'package:hoshan/ui/screens/setting/utilization_report_page.dart';
@@ -63,7 +64,10 @@ class Routes {
             return const SettingPage();
 
           case editProfile:
-            return const EditProfilePage();
+            return BlocProvider<CheckUsernameCubit>(
+              create: (context) => CheckUsernameCubit(),
+              child: const EditProfilePage(),
+            );
 
           case utilizationReport:
             return const UtilizationReportPage();

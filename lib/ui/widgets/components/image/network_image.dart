@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hoshan/core/services/api/dio_service.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 
 class ImageNetwork extends StatelessWidget {
@@ -19,17 +21,25 @@ class ImageNetwork extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: aspectRatio,
         child: CachedNetworkImage(
+          httpHeaders: {
+            'Authorization': 'Bearer ${DioService.token}',
+          },
           imageUrl: url,
           placeholder: (context, url) => placeholderView(),
-          errorWidget: (context, url, error) => placeholderView(
-            child: Center(
-              child: Icon(
-                Icons.image_not_supported_rounded,
-                size: 60,
-                color: AppColors.primaryColor.defaultShade,
+          errorWidget: (context, url, error) {
+            if (kDebugMode) {
+              print("Catch image with Url: $url Failed Error: $error");
+            }
+            return placeholderView(
+              child: Center(
+                child: Icon(
+                  Icons.image_not_supported_rounded,
+                  size: 60,
+                  color: AppColors.primaryColor.defaultShade,
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

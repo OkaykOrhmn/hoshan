@@ -20,12 +20,23 @@ class ChatbotRepository {
     cancelToken = CancelToken();
 
     try {
+      FormData formDatBody = FormData();
+      formDatBody.fields
+          .add(MapEntry('model', sendMessageModel.model.toString()));
+      formDatBody.fields
+          .add(MapEntry('query', sendMessageModel.query.toString()));
+      formDatBody.fields
+          .add(MapEntry('bot_id', sendMessageModel.botId.toString()));
+      formDatBody.fields.add(MapEntry(
+          'retry', (sendMessageModel.retry ?? false).toString().toLowerCase()));
+      if (sendMessageModel.id != null) {
+        formDatBody.fields.add(MapEntry("id", sendMessageModel.id.toString()));
+      }
+
       Response<ResponseBody> response =
           await _dioService.sendRequestStream.post<ResponseBody>(
         DioService.sendMessage,
-        data: FormData.fromMap(
-          sendMessageModel.toJson(),
-        ),
+        data: formDatBody,
         cancelToken: cancelToken,
       );
       await for (var value in response.data!.stream) {
@@ -99,6 +110,16 @@ class ChatbotRepository {
     }
   }
 
+  static Future<Response> deleteAllChats() async {
+    try {
+      final response =
+          await _dioService.sendRequest.delete(DioService.sendMessage);
+      return response;
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
   static Future<Response> likedMessage(
       {required final int chatId,
       required final String messageId,
@@ -136,6 +157,19 @@ class ChatbotRepository {
           ),
           data: {"id": messageId, "content": content});
       return RelatedQuestionsModel.fromJson(response.data);
+    } catch (ex) {
+      rethrow;
+    }
+  }
+
+  static Future<bool> archiveChat(final int chatId, final bool archive) async {
+    try {
+      final response = await _dioService.sendRequest.put(
+          DioService.archive(
+            id: chatId,
+          ),
+          data: {"archive": archive});
+      return (response.statusCode!) >= 200 && (response.statusCode!) < 300;
     } catch (ex) {
       rethrow;
     }

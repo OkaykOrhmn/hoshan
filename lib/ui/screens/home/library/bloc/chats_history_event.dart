@@ -10,15 +10,9 @@ sealed class ChatsHistoryEvent extends Equatable {
 class GetAllChats extends ChatsHistoryEvent {
   final String? search;
   final String? date;
+  final bool archive;
 
-  const GetAllChats({this.search, this.date});
-}
-
-class GetArchivedChats extends ChatsHistoryEvent {
-  final String? search;
-  final String? date;
-
-  const GetArchivedChats({this.search, this.date});
+  const GetAllChats({this.search, this.date, this.archive = false});
 }
 
 class AddChat extends ChatsHistoryEvent {
@@ -29,6 +23,9 @@ class AddChat extends ChatsHistoryEvent {
 
 class RemoveChat extends ChatsHistoryEvent {
   final Chats chats;
+  final bool withCall;
 
-  const RemoveChat({required this.chats});
+  const RemoveChat({required this.chats, this.withCall = true});
 }
+
+class RemoveAll extends ChatsHistoryEvent {}

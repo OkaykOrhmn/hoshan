@@ -1,5 +1,6 @@
-// ignore_for_file: deprecated_member_use_from_same_package
+// ignore_for_file: deprecated_member_use_from_same_package, use_build_context_synchronously
 
+import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hoshan/core/gen/assets.gen.dart';
@@ -11,7 +12,77 @@ class BottomSheetHandler {
   final BuildContext context;
   BottomSheetHandler(this.context);
 
-  Future<void> showPickImage({final bool withAvatar = false}) async {
+  Future<void> showStringList(
+      {required final List<String> values,
+      required final String title,
+      final Function(String)? onSelect}) async {
+    final ScrollController scrollController = ScrollController();
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      builder: (context) => Container(
+        width: MediaQuery.sizeOf(context).width,
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height / 2.4),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const SizedBox(
+              height: 32,
+            ),
+            Text(
+              title,
+              style: AppTextStyles.body3.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Expanded(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  interactive: true,
+                  controller: scrollController,
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    controller: scrollController,
+                    child: Column(
+                      children: List.generate(
+                        values.length,
+                        (index) => InkWell(
+                          onTap: () {
+                            onSelect?.call(values[index]);
+                            Navigator.pop(context);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0),
+                            child: Row(
+                              children: [
+                                Text(
+                                  values[index],
+                                  style: AppTextStyles.body4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> showPickImage(
+      {final bool withAvatar = false, final Function(XFile)? onSelect}) async {
     await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -26,7 +97,11 @@ class BottomSheetHandler {
                   icon: Assets.icon.outline.camera,
                   title: 'دوربین',
                   onTap: () async {
-                    await PickFileService.getCameraImage();
+                    final file = await PickFileService.getCameraImage();
+                    if (file != null) {
+                      onSelect?.call(file);
+                      Navigator.pop(context);
+                    }
                   }),
               const SizedBox(
                 width: 24,
@@ -35,7 +110,12 @@ class BottomSheetHandler {
                   icon: Assets.icon.outline.galleryAdd,
                   title: 'گالری',
                   onTap: () async {
-                    await PickFileService.getFile(fileType: FileType.image);
+                    final file =
+                        await PickFileService.getFile(fileType: FileType.image);
+                    if (file != null) {
+                      onSelect?.call(file.single);
+                      Navigator.pop(context);
+                    }
                   }),
               if (withAvatar)
                 Row(
@@ -48,8 +128,12 @@ class BottomSheetHandler {
                         icon: Assets.icon.outline.emojiHappy,
                         title: 'آواتار',
                         onTap: () async {
-                          await PickFileService.getFile(
+                          final file = await PickFileService.getFile(
                               fileType: FileType.image);
+                          if (file != null) {
+                            onSelect?.call(file.single);
+                            Navigator.pop(context);
+                          }
                         }),
                   ],
                 )

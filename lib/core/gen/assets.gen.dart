@@ -183,7 +183,7 @@ class $AssetsIconOutlineGen {
 
   /// File path: assets/icon/outline/edit-2.svg
   SvgGenImage get edit2 => const SvgGenImage('assets/icon/outline/edit-2.svg',
-      size: Size(16.0, 17.0));
+      size: Size(16.0, 16.0));
 
   /// File path: assets/icon/outline/element-plus.svg
   SvgGenImage get elementPlus =>
@@ -199,6 +199,10 @@ class $AssetsIconOutlineGen {
   SvgGenImage get emptyWalletTick =>
       const SvgGenImage('assets/icon/outline/empty-wallet-tick.svg',
           size: Size(24.0, 24.0));
+
+  /// File path: assets/icon/outline/eraser.svg
+  SvgGenImage get eraser => const SvgGenImage('assets/icon/outline/eraser.svg',
+      size: Size(16.0, 17.0));
 
   /// File path: assets/icon/outline/filter.svg
   SvgGenImage get filter => const SvgGenImage('assets/icon/outline/filter.svg',
@@ -335,9 +339,19 @@ class $AssetsIconOutlineGen {
       const SvgGenImage('assets/icon/outline/tool-box.svg',
           size: Size(24.0, 24.0));
 
+  /// File path: assets/icon/outline/translate.svg
+  SvgGenImage get translate =>
+      const SvgGenImage('assets/icon/outline/translate.svg',
+          size: Size(16.0, 16.0));
+
   /// File path: assets/icon/outline/trash.svg
   SvgGenImage get trash => const SvgGenImage('assets/icon/outline/trash.svg',
       size: Size(16.0, 16.0));
+
+  /// File path: assets/icon/outline/voice-cricle.svg
+  SvgGenImage get voiceCricle =>
+      const SvgGenImage('assets/icon/outline/voice-cricle.svg',
+          size: Size(16.0, 16.0));
 
   /// List of all assets
   List<SvgGenImage> get values => [
@@ -360,6 +374,7 @@ class $AssetsIconOutlineGen {
         elementPlus,
         emojiHappy,
         emptyWalletTick,
+        eraser,
         filter,
         galleryAdd,
         lampCharge,
@@ -389,7 +404,9 @@ class $AssetsIconOutlineGen {
         sun,
         tickCircle,
         toolBox,
-        trash
+        translate,
+        trash,
+        voiceCricle
       ];
 }
 

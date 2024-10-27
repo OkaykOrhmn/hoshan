@@ -12,6 +12,11 @@ class DioService {
   static String loginWithPassword = '/user/login'; //POST
   static String loginWithOTP = '/user/login/otp'; //POST
   static String getInfo = '/user/info'; //GET
+  static String editUsername = '/user/username'; //PUT
+  static String checkUsername = '/user/username'; //POST
+  static String editProfile = '/user/profile'; //PUT
+  static String editPassword = '/user/password'; //PUT
+  static String deleteProfile = '/user/profile'; //DELETE
   //chatbot
   static String sendMessage = '/chatbot/'; //POST //GET //DELETE //STREAM
   static String chatHistory({required final int id}) =>

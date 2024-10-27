@@ -1,5 +1,7 @@
 // ignore_for_file: deprecated_member_use_from_same_package, use_build_context_synchronously
 
+import 'dart:math';
+
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +12,7 @@ import 'package:hoshan/data/model/popup_menu_model.dart';
 import 'package:hoshan/ui/screens/home/chat/bloc/related_questions_bloc.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/library/bloc/chats_history_bloc.dart';
+import 'package:hoshan/ui/screens/home/library/cubit/handle_archive_cubit.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
 import 'package:hoshan/ui/screens/home/library/cubit/chat_row_edit_cubit.dart';
@@ -17,7 +20,9 @@ import 'package:hoshan/ui/widgets/components/dialog/dialog_handler.dart';
 import 'package:hoshan/ui/widgets/components/text/auth_text_field.dart';
 import 'package:hoshan/ui/widgets/components/text/search_text_field.dart';
 import 'package:hoshan/ui/widgets/sections/empty/empty_states.dart';
+import 'package:hoshan/ui/widgets/sections/loading/default_placeholder.dart';
 import 'package:hoshan/ui/widgets/sections/loading/listview_placeholder.dart';
+import 'package:shamsi_date/shamsi_date.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -33,6 +38,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
     EasyDebounce.cancelAll();
   }
 
+  String? date;
+  Jalali? dateJalali;
+  final TextEditingController searchTextController = TextEditingController();
+  bool archive = false;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -40,31 +50,133 @@ class _LibraryScreenState extends State<LibraryScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24.0),
           child: SearchTextField(
-            suffixIcon: InkWell(
-              onTap: () async {
-                await DialogHandler(context: context).showDatePicker(
-                  dateCounts: 1,
-                  onConfirm: (p0) {},
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Assets.icon.outline.filter.svg(),
-              ),
+            controller: searchTextController,
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 12,
+                ),
+                InkWell(
+                  onTap: () async {
+                    await DialogHandler(context: context).showDatePicker(
+                      dateCounts: 1,
+                      selectedDates: dateJalali != null ? [dateJalali!] : null,
+                      onConfirm: (p0) {
+                        if (p0.isEmpty) {
+                          if (date != null) {
+                            date = null;
+                            dateJalali = null;
+                            context.read<ChatsHistoryBloc>().add(GetAllChats(
+                                search: searchTextController.text,
+                                date: date,
+                                archive: archive));
+                          }
+
+                          return;
+                        }
+
+                        dateJalali = p0.first;
+                        DateTime miladiDate = dateJalali!.toDateTime();
+                        date =
+                            '${miladiDate.year}-${miladiDate.month}-${miladiDate.day}';
+                        context.read<ChatsHistoryBloc>().add(GetAllChats(
+                            search: searchTextController.text,
+                            date: date,
+                            archive: archive));
+                      },
+                    );
+                  },
+                  child: Assets.icon.outline.filter.svg(),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                PopupMenuButton<int>(
+                    offset: const Offset(-12, 42),
+                    onSelected: (value) async {
+                      switch (value) {
+                        case 0:
+                          await DialogHandler(context: context).showDeleteItem(
+                            title: 'همه چت ها',
+                            onConfirm: () {
+                              context.read<ChatsHistoryBloc>().add(RemoveAll());
+                            },
+                          );
+                          break;
+                        case 1:
+                          archive = !archive;
+                          context.read<ChatsHistoryBloc>().add(GetAllChats(
+                              search: searchTextController.text,
+                              date: date,
+                              archive: archive));
+                          break;
+
+                        default:
+                      }
+                    },
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    itemBuilder: (context) => <PopupMenuItem<int>>[
+                          PopupMenuItem(
+                              value: 0,
+                              height: 38,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'حذف همه',
+                                    style: AppTextStyles.body4,
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Assets.icon.outline.trash.svg(),
+                                ],
+                              )),
+                          PopupMenuItem(
+                              value: 1,
+                              height: 38,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    archive
+                                        ? 'خارج از آرشیوها'
+                                        : 'نمایش آرشیوها',
+                                    style: AppTextStyles.body4,
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Assets.icon.outline.directInbox.svg(),
+                                ],
+                              ))
+                        ],
+                    child: Transform.rotate(
+                      angle: 90 * pi / 180,
+                      child: Assets.icon.outline.more
+                          .svg(color: AppColors.gray[900]),
+                    )),
+                const SizedBox(
+                  width: 12,
+                ),
+              ],
             ),
             onChanged: (searchText) {
               if (searchText.isEmpty) {
                 EasyDebounce.cancelAll();
-                context.read<ChatsHistoryBloc>().add(const GetAllChats());
+                context
+                    .read<ChatsHistoryBloc>()
+                    .add(GetAllChats(date: date, archive: archive));
                 return;
               }
               EasyDebounce.debounce(
                   'my-debouncer', // <-- An ID for this particular debouncer
                   const Duration(seconds: 1), // <-- The debounce duration
                   () {
-                context
-                    .read<ChatsHistoryBloc>()
-                    .add(GetAllChats(search: searchText));
+                context.read<ChatsHistoryBloc>().add(GetAllChats(
+                    search: searchText, date: date, archive: archive));
               } // <-- The target method
                   );
             },
@@ -157,7 +269,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
       // PopupMenuModel(
       //     id: 1, title: 'به اشتراک گذاری', icon: Assets.icon.outline.share),
       PopupMenuModel(
-          id: 2, title: 'آرشیو کردن', icon: Assets.icon.outline.directInbox),
+          id: 2,
+          title: archive ? 'خارج کردن' : 'آرشیو کردن',
+          icon: Assets.icon.outline.directInbox),
       PopupMenuModel(id: 3, title: 'پاک کردن', icon: Assets.icon.outline.trash),
     ];
     late final TextEditingController editingController = TextEditingController(
@@ -170,189 +284,237 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<ChatRowEditCubit>(create: (context) => ChatRowEditCubit()),
+        BlocProvider<HandleArchiveCubit>(
+            create: (context) => HandleArchiveCubit()),
       ],
-      child: BlocBuilder<ChatRowEditCubit, ChatRowEditState>(
-        builder: (context, state) {
-          return InkWell(
-            onTap: () async {
-              HomeCubit.indexed.value = 0;
-              HomeCubit.chatId.value = -1;
-
-              await context.read<HomeCubit>().getItems(id: chat.id!);
-              final humanMessage =
-                  await context.read<HomeCubit>().getLatsHumanMessage();
-              if (humanMessage != null) {
-                context.read<RelatedQuestionsBloc>().add(GetAllRelatedQuestions(
-                    chatId: HomeCubit.chatId.value!,
-                    messageId: humanMessage.id!,
-                    content: humanMessage.content!));
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: BlocConsumer<HandleArchiveCubit, HandleArchiveState>(
+        listener: (context, archState) {
+          if (archState is HandleArchiveSuccess) {
+            context
+                .read<ChatsHistoryBloc>()
+                .add(RemoveChat(chats: chat, withCall: false));
+          }
+        },
+        builder: (context, archState) {
+          if (archState is HandleArchiveLoading) {
+            return DefaultPlaceHolder(
+                child: Container(
               width: MediaQuery.sizeOf(context).width,
+              height: 58,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(8)),
-              child: ValueListenableBuilder(
-                  valueListenable: isEdit,
-                  builder: (context, edit, _) {
-                    return Row(
-                      children: [
-                        state is ChatRowEditLoading
-                            ? SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  color: AppColors.primaryColor.defaultShade,
-                                ),
-                              )
-                            : edit
-                                ? InkWell(
-                                    onTap: () async {
-                                      await context
-                                          .read<ChatRowEditCubit>()
-                                          .editTitle(
-                                              id: chat.id!,
+            ));
+          }
+          return BlocBuilder<ChatRowEditCubit, ChatRowEditState>(
+            builder: (context, state) {
+              return InkWell(
+                onTap: () async {
+                  HomeCubit.indexed.value = 0;
+                  HomeCubit.chatId.value = -1;
+
+                  await context.read<HomeCubit>().getItems(id: chat.id!);
+                  final humanMessage =
+                      await context.read<HomeCubit>().getLatsHumanMessage();
+                  if (humanMessage != null) {
+                    context.read<RelatedQuestionsBloc>().add(
+                        GetAllRelatedQuestions(
+                            chatId: HomeCubit.chatId.value!,
+                            messageId: humanMessage.id!,
+                            content: humanMessage.content!));
+                  }
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  width: MediaQuery.sizeOf(context).width,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: ValueListenableBuilder(
+                      valueListenable: isEdit,
+                      builder: (context, edit, _) {
+                        return Row(
+                          children: [
+                            state is ChatRowEditLoading
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      color:
+                                          AppColors.primaryColor.defaultShade,
+                                    ),
+                                  )
+                                : edit
+                                    ? InkWell(
+                                        onTap: () async {
+                                          await context
+                                              .read<ChatRowEditCubit>()
+                                              .editTitle(
+                                                  id: chat.id!,
+                                                  title:
+                                                      editingController.text);
+                                          chat = chat.copyWith(
                                               title: editingController.text);
-                                      chat = chat.copyWith(
-                                          title: editingController.text);
-                                      isEdit.value = false;
-                                    },
-                                    child: Assets.icon.outline.tickCircle.svg())
-                                : PopupMenuButton<PopupMenuModel>(
-                                    offset: const Offset(0, 18),
-                                    onSelected: (value) async {
-                                      switch (value.id) {
-                                        case 0:
-                                          isEdit.value = true;
-                                          break;
-                                        case 1:
-                                          break;
-                                        case 2:
-                                          break;
-                                        case 3:
-                                          // widget.onDelete.call();
-                                          await DialogHandler(context: context)
-                                              .showDeleteItem(
-                                            title: 'چت',
-                                            onConfirm: () {
-                                              context
-                                                  .read<ChatsHistoryBloc>()
-                                                  .add(RemoveChat(chats: chat));
-                                            },
-                                          );
-                                          break;
-                                        default:
-                                      }
-                                    },
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8)),
-                                    itemBuilder: (BuildContext context) {
-                                      return <PopupMenuEntry<PopupMenuModel>>[
-                                        ...List.generate(
-                                          popups.length,
-                                          (index) =>
-                                              PopupMenuItem<PopupMenuModel>(
-                                            value: popups[index],
-                                            height: 32,
-                                            child: Directionality(
-                                              textDirection: TextDirection.rtl,
-                                              child: Column(
-                                                children: [
-                                                  if (index == 0)
-                                                    const SizedBox(
-                                                      height: 12,
-                                                    ),
-                                                  Row(
+                                          isEdit.value = false;
+                                        },
+                                        child: Assets.icon.outline.tickCircle
+                                            .svg())
+                                    : PopupMenuButton<PopupMenuModel>(
+                                        offset: const Offset(0, 18),
+                                        onSelected: (value) async {
+                                          switch (value.id) {
+                                            case 0:
+                                              isEdit.value = true;
+                                              break;
+                                            case 1:
+                                              break;
+                                            case 2:
+                                              archive
+                                                  ? await context
+                                                      .read<
+                                                          HandleArchiveCubit>()
+                                                      .removeFromArchive(
+                                                          chat.id!)
+                                                  : await context
+                                                      .read<
+                                                          HandleArchiveCubit>()
+                                                      .addToArchive(chat.id!);
+                                              break;
+                                            case 3:
+                                              // widget.onDelete.call();
+                                              await DialogHandler(
+                                                      context: context)
+                                                  .showDeleteItem(
+                                                title: 'چت',
+                                                onConfirm: () {
+                                                  context
+                                                      .read<ChatsHistoryBloc>()
+                                                      .add(RemoveChat(
+                                                          chats: chat));
+                                                },
+                                              );
+                                              break;
+                                            default:
+                                          }
+                                        },
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        itemBuilder: (BuildContext context) {
+                                          return <PopupMenuEntry<
+                                              PopupMenuModel>>[
+                                            ...List.generate(
+                                              popups.length,
+                                              (index) =>
+                                                  PopupMenuItem<PopupMenuModel>(
+                                                value: popups[index],
+                                                height: 32,
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: Column(
                                                     children: [
-                                                      if (popups[index].icon !=
-                                                          null)
-                                                        Row(
-                                                          children: [
-                                                            SizedBox(
-                                                              width: 16,
-                                                              height: 16,
-                                                              child: popups[
-                                                                      index]
-                                                                  .icon!
-                                                                  .svg(
-                                                                      color: AppColors
-                                                                          .secondryColor
-                                                                          .defaultShade),
-                                                            ),
-                                                            const SizedBox(
-                                                              width: 6,
-                                                            )
-                                                          ],
+                                                      if (index == 0)
+                                                        const SizedBox(
+                                                          height: 12,
                                                         ),
-                                                      Text(
-                                                        popups[index].title,
-                                                        style: AppTextStyles
-                                                            .body6
-                                                            .copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
+                                                      Row(
+                                                        children: [
+                                                          if (popups[index]
+                                                                  .icon !=
+                                                              null)
+                                                            Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: 16,
+                                                                  height: 16,
+                                                                  child: popups[
+                                                                          index]
+                                                                      .icon!
+                                                                      .svg(
+                                                                          color: AppColors
+                                                                              .secondryColor
+                                                                              .defaultShade),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 6,
+                                                                )
+                                                              ],
+                                                            ),
+                                                          Text(
+                                                            popups[index].title,
+                                                            style: AppTextStyles
+                                                                .body6
+                                                                .copyWith(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                          ),
+                                                        ],
                                                       ),
+                                                      Divider(
+                                                        color: index !=
+                                                                popups.length -
+                                                                    1
+                                                            ? AppColors.gray
+                                                                .defaultShade
+                                                            : Colors
+                                                                .transparent,
+                                                      )
                                                     ],
                                                   ),
-                                                  Divider(
-                                                    color: index !=
-                                                            popups.length - 1
-                                                        ? AppColors
-                                                            .gray.defaultShade
-                                                        : Colors.transparent,
-                                                  )
-                                                ],
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                            )
+                                          ];
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10.0),
+                                          child: Assets.icon.outline.more
+                                              .svg(color: AppColors.gray[900]),
+                                        )),
+                            const SizedBox(
+                              width: 16,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  edit
+                                      ? AuthTextField(
+                                          controller: editingController,
+                                          maxLines: 4,
+                                          minLines: 4,
                                         )
-                                      ];
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0),
-                                      child: Assets.icon.outline.more
-                                          .svg(color: AppColors.gray[900]),
-                                    )),
-                        const SizedBox(
-                          width: 16,
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              edit
-                                  ? AuthTextField(
-                                      controller: editingController,
-                                      maxLines: 4,
-                                      minLines: 4,
-                                    )
-                                  : Text(
-                                      chat.title!.replaceAll("\"", ''),
-                                      style: AppTextStyles.body4,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                              const SizedBox(
-                                height: 4,
+                                      : Text(
+                                          chat.title!.replaceAll("\"", ''),
+                                          style: AppTextStyles.body4,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    DateTimeUtils
+                                        .convertStringIsoToStringInFormatted(
+                                            chat.createdAt!),
+                                    style: AppTextStyles.body5
+                                        .copyWith(color: AppColors.gray[900]),
+                                  )
+                                ],
                               ),
-                              Text(
-                                DateTimeUtils
-                                    .convertStringIsoToStringInFormatted(
-                                        chat.createdAt!),
-                                style: AppTextStyles.body5
-                                    .copyWith(color: AppColors.gray[900]),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
-            ),
+                            ),
+                          ],
+                        );
+                      }),
+                ),
+              );
+            },
           );
         },
       ),

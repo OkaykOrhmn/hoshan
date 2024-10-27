@@ -52,7 +52,7 @@ class ChatsHistoryBloc extends Bloc<ChatsHistoryEvent, ChatsHistoryState> {
         ChatsIndatesModel(
             title: 'ماه های اخیر', chats: otherChats.reversed.toList()),
       ];
-
+      ChatsHistoryBloc.chatsInDates.clear();
       ChatsHistoryBloc.chatsInDates.addAll(chatsInDates);
 
       return chatsInDates;
@@ -63,29 +63,10 @@ class ChatsHistoryBloc extends Bloc<ChatsHistoryEvent, ChatsHistoryState> {
         emit(ChatsHistoryLoading());
         try {
           final response = await ChatbotRepository.getChats(
-              search: event.search, date: event.date);
+              search: event.search, date: event.date, archive: event.archive);
           if (response.chats == null || response.chats!.isEmpty) {
             emit(ChatsHistoryEmpty());
           } else {
-            emit(ChatsHistorySuccess(
-                chatsInDates: onOrganizeChats(response.chats!)));
-          }
-        } on DioException catch (e) {
-          emit(ChatsHistoryFail());
-          if (kDebugMode) {
-            print("Dio Error is : $e");
-          }
-        }
-      }
-      if (event is GetArchivedChats) {
-        emit(ChatsHistoryLoading());
-        try {
-          final response = await ChatbotRepository.getChats(
-              archive: true, search: event.search, date: event.date);
-          if (response.chats == null || response.chats!.isEmpty) {
-            emit(ChatsHistoryEmpty());
-          } else {
-            onOrganizeChats(response.chats!);
             emit(ChatsHistorySuccess(
                 chatsInDates: onOrganizeChats(response.chats!)));
           }
@@ -106,7 +87,9 @@ class ChatsHistoryBloc extends Bloc<ChatsHistoryEvent, ChatsHistoryState> {
 
       if (event is RemoveChat) {
         try {
-          await ChatbotRepository.deleteChat(id: event.chats.id!);
+          if (event.withCall) {
+            await ChatbotRepository.deleteChat(id: event.chats.id!);
+          }
           int? index;
           int? mainIndex;
           for (var chatInDate in chatsInDates) {
@@ -123,8 +106,36 @@ class ChatsHistoryBloc extends Bloc<ChatsHistoryEvent, ChatsHistoryState> {
           if (HomeCubit.chatId.value == event.chats.id) {
             HomeCubit.chatId.value = null;
           }
+          bool isEmpty = true;
+          for (var chatInDate in chatsInDates) {
+            if (chatInDate.chats.isNotEmpty) {
+              isEmpty = false;
+              break;
+            }
+          }
           emit(ChatsHistoryLoading());
-          emit(ChatsHistorySuccess(chatsInDates: chatsInDates));
+          if (isEmpty) {
+            emit(ChatsHistoryEmpty());
+          } else {
+            emit(ChatsHistorySuccess(chatsInDates: chatsInDates));
+          }
+        } on DioException catch (e) {
+          // emit(ChatsHistoryFail());
+          if (kDebugMode) {
+            print("Dio Error is : $e");
+          }
+        }
+      }
+
+      if (event is RemoveAll) {
+        emit(ChatsHistoryLoading());
+
+        try {
+          await ChatbotRepository.deleteAllChats();
+          chatsInDates.clear();
+          HomeCubit.chatId.value = null;
+
+          emit(ChatsHistoryEmpty());
         } on DioException catch (e) {
           // emit(ChatsHistoryFail());
           if (kDebugMode) {

@@ -10,6 +10,7 @@ import 'package:hoshan/data/model/ai/bots_model.dart';
 import 'package:hoshan/data/model/ai/chats_history_model.dart';
 import 'package:hoshan/data/model/ai/messages_model.dart';
 import 'package:hoshan/data/model/ai/send_message_model.dart';
+import 'package:hoshan/data/model/popup_menu_model.dart';
 import 'package:hoshan/ui/screens/home/chat/bloc/related_questions_bloc.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/library/bloc/chats_history_bloc.dart';
@@ -20,9 +21,11 @@ import 'package:hoshan/ui/widgets/components/chat/bloc/send_message_bloc.dart';
 import 'package:hoshan/ui/widgets/components/chat/bloc/send_message_event.dart';
 import 'package:hoshan/ui/widgets/components/chat/bloc/send_message_state.dart';
 import 'package:hoshan/ui/widgets/components/chat/cubit/like_message_cubit.dart';
+import 'package:hoshan/ui/widgets/components/dialog/bottom_sheets.dart';
 import 'package:hoshan/ui/widgets/components/dialog/dialog_handler.dart';
 import 'package:hoshan/ui/widgets/components/dropdown/cubit/all_bots_cubit.dart';
 import 'package:hoshan/ui/widgets/components/snackbar/snackbar_handler.dart';
+import 'package:hoshan/ui/widgets/components/text/default_markdown_text.dart';
 import 'package:hoshan/ui/widgets/sections/loading/default_placeholder.dart';
 
 class ChatBubble extends StatefulWidget {
@@ -128,14 +131,15 @@ class _ChatBubbleState extends State<ChatBubble> {
                             builder: (context, state) {
                               return Column(
                                 children: [
-                                  Text(
-                                    state is SendMessageLoading
+                                  DefaultMarkdownText(
+                                    text: state is SendMessageLoading
                                         ? state.response
                                         : state is SendMessageSuccess
                                             ? state.response
                                             : '',
-                                    style: AppTextStyles.body4.copyWith(
-                                        color: AppColors.black.defaultShade),
+                                    color: messages.fromBot!
+                                        ? AppColors.black.defaultShade
+                                        : Colors.white,
                                   ),
                                   state is SendMessageSuccess
                                       ? messageActions()
@@ -153,12 +157,11 @@ class _ChatBubbleState extends State<ChatBubble> {
                           children: [
                             SizedBox(
                               width: MediaQuery.sizeOf(context).width,
-                              child: Text(
-                                messages.content ?? '',
-                                style: AppTextStyles.body4.copyWith(
-                                    color: messages.fromBot!
-                                        ? AppColors.black.defaultShade
-                                        : Colors.white),
+                              child: DefaultMarkdownText(
+                                text: messages.content ?? '',
+                                color: messages.fromBot!
+                                    ? AppColors.black.defaultShade
+                                    : Colors.white,
                               ),
                             ),
                             messageActions()
@@ -394,19 +397,89 @@ class _ChatBubbleState extends State<ChatBubble> {
   }
 
   PopupMenuButton<dynamic> pencilPopupMenu() {
-    return PopupMenuButton(
+    List<PopupMenuModel> popUps = [
+      PopupMenuModel(
+          id: 0, title: 'خلاصه‌تر بنویس', icon: Assets.icon.outline.eraser),
+      PopupMenuModel(
+          id: 1, title: 'کامل بنویس', icon: Assets.icon.outline.edit2),
+      PopupMenuModel(
+          id: 2,
+          title: 'لحن نوشته را تغییر بده',
+          icon: Assets.icon.outline.voiceCricle),
+      PopupMenuModel(
+          id: 3, title: 'ترجمه کن', icon: Assets.icon.outline.translate)
+    ];
+    return PopupMenuButton<PopupMenuModel>(
         offset: const Offset(0, 38),
-        onSelected: (value) async {},
+        onSelected: (value) async {
+          switch (value.id) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              await BottomSheetHandler(context).showStringList(
+                  title: 'انتخاب لحن نوشته',
+                  values: [
+                    'رسمی',
+                    'عامیانه',
+                    'دوستانه',
+                    'حرفه ای',
+                    'محاوره ای',
+                    'طنز',
+                    'جدی'
+                  ]);
+              break;
+            case 3:
+              await BottomSheetHandler(context)
+                  .showStringList(title: 'انتخاب زبان', values: [
+                '🇮🇷 فارسی',
+                'Arabic 🇸🇦',
+                'Bengali 🇧🇩',
+                'English 🇬🇧',
+                'French 🇫🇷',
+                'German 🇩🇪',
+                'Hindi 🇮🇳',
+                'Italian 🇮🇹'
+              ]);
+              break;
+            default:
+          }
+        },
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         itemBuilder: (BuildContext context) {
-          return <PopupMenuEntry>[
+          return <PopupMenuEntry<PopupMenuModel>>[
             ...List.generate(
-              4,
-              (index) => PopupMenuItem(
-                value: index,
+              popUps.length,
+              (index) => PopupMenuItem<PopupMenuModel>(
+                value: popUps[index],
                 height: 32,
-                child: Container(
-                    constraints: const BoxConstraints(maxWidth: 120),
-                    child: Text(index.toString())),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    children: [
+                      if (popUps[index].icon != null)
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: popUps[index].icon!.svg(
+                                  color: AppColors.secondryColor.defaultShade),
+                            ),
+                            const SizedBox(
+                              width: 6,
+                            )
+                          ],
+                        ),
+                      Text(
+                        popUps[index].title,
+                        style: AppTextStyles.body6
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             )
           ];

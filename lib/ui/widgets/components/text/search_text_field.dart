@@ -8,8 +8,14 @@ class SearchTextField extends StatelessWidget {
   final String? hintText;
   final String? label;
   final Widget? suffixIcon;
+  final TextEditingController? controller;
   SearchTextField(
-      {super.key, this.onChanged, this.hintText, this.label, this.suffixIcon});
+      {super.key,
+      this.onChanged,
+      this.hintText,
+      this.label,
+      this.suffixIcon,
+      this.controller});
 
   final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
@@ -23,6 +29,7 @@ class SearchTextField extends StatelessWidget {
         color: Colors.white,
         margin: const EdgeInsets.symmetric(horizontal: 16),
         child: TextField(
+          controller: controller,
           style: AppTextStyles.body5,
           onChanged: onChanged,
           decoration: InputDecoration(

@@ -7,6 +7,7 @@ import 'package:hoshan/core/gen/assets.gen.dart';
 import 'package:hoshan/core/services/file_manager/pick_file_services.dart';
 import 'package:hoshan/data/model/home_navbar_model.dart';
 import 'package:hoshan/data/model/ai/messages_model.dart';
+import 'package:hoshan/data/repository/chatbot_repository.dart';
 import 'package:hoshan/ui/screens/home/chat/bloc/related_questions_bloc.dart';
 import 'package:hoshan/ui/screens/home/cubit/home_cubit_cubit.dart';
 import 'package:hoshan/ui/screens/home/library/library_screen.dart';
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
                   HomeCubit.chatId.value = null;
                   HomeCubit.bot = null;
                   context.read<HomeCubit>().clearItems();
-
+                  ChatbotRepository.cancelToken?.cancel();
                   return false;
                 } else {
                   return true;
@@ -74,9 +75,11 @@ class _HomePageState extends State<HomePage> {
                       valueListenable: HomeCubit.chatId,
                       builder: (context, val, _) {
                         return val != null
-                            ? val == -1
-                                ? const ChatScreenPlaceholder()
-                                : const ChatScreen()
+                            ? val == -3
+                                ? EmptyStates.server()
+                                : val == -1
+                                    ? const ChatScreenPlaceholder()
+                                    : const ChatScreen()
                             : const HomeChatScreen();
                       }),
                   EmptyStates.inbox(),

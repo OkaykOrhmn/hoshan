@@ -50,6 +50,11 @@ class MyApp extends StatelessWidget {
       initialRoute: Routes.main,
       onGenerateRoute: Routes.routeGenerator,
       theme: ThemeData(
+          scrollbarTheme: ScrollbarThemeData(
+              radius: const Radius.circular(100),
+              thumbColor:
+                  WidgetStateProperty.all(AppColors.primaryColor.defaultShade),
+              trackColor: WidgetStateProperty.all(AppColors.black[50])),
           appBarTheme: const AppBarTheme(
               surfaceTintColor: Colors.white, backgroundColor: Colors.white),
           scaffoldBackgroundColor: AppColors.gray[200],
