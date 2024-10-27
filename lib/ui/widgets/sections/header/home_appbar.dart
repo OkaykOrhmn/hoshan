@@ -32,7 +32,10 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
               ],
             ),
           ),
-          Flexible(child: Center(child: Assets.image.appIconPrimary.svg())),
+          Flexible(
+              child: Center(
+                  child: SizedBox(
+                      width: 72, child: Assets.image.appIconPrimary.svg()))),
           Flexible(
             flex: 1,
             child: Row(
@@ -64,5 +67,5 @@ class HomeAppbar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 12);
 }

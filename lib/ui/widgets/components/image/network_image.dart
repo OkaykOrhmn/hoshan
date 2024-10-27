@@ -22,7 +22,7 @@ class ImageNetwork extends StatelessWidget {
         aspectRatio: aspectRatio,
         child: CachedNetworkImage(
           httpHeaders: {
-            'Authorization': 'Bearer ${DioService.token}',
+            'Authorization': "Bearer ${DioService.token}",
           },
           imageUrl: url,
           placeholder: (context, url) => placeholderView(),
