@@ -25,13 +25,17 @@ class Bots {
   int? id;
   String? name;
   String? image;
+  int? attachment;
+  List<String>? attachmentType;
 
-  Bots({this.id, this.name, this.image});
+  Bots({this.id, this.name, this.image, this.attachment, this.attachmentType});
 
   Bots.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     image = json['image'];
+    attachment = json['attachment'];
+    attachmentType = json['attachment_type']?.cast<String>();
   }
 
   Map<String, dynamic> toJson() {
@@ -39,6 +43,8 @@ class Bots {
     data['id'] = id;
     data['name'] = name;
     data['image'] = image;
+    data['attachment'] = attachment;
+    data['attachment_type'] = attachmentType;
     return data;
   }
 }

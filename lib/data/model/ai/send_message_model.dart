@@ -1,11 +1,15 @@
+import 'package:cross_file/cross_file.dart';
+
 class SendMessageModel {
   int? id;
   String? model;
   String? query;
   int? botId;
   bool? retry;
+  XFile? file;
 
-  SendMessageModel({this.id, this.model, this.query, this.botId, this.retry});
+  SendMessageModel(
+      {this.id, this.model, this.query, this.botId, this.retry, this.file});
 
   SendMessageModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

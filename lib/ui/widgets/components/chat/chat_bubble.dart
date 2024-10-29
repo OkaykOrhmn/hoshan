@@ -1,11 +1,14 @@
 // ignore_for_file: deprecated_member_use_from_same_package, use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hoshan/core/gen/assets.gen.dart';
+import 'package:hoshan/core/utils/file.dart';
 import 'package:hoshan/data/model/ai/bots_model.dart';
 import 'package:hoshan/data/model/ai/chats_history_model.dart';
 import 'package:hoshan/data/model/ai/messages_model.dart';
@@ -50,9 +53,11 @@ class _ChatBubbleState extends State<ChatBubble> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-            messages.fromBot! ? 16 : 32, 0, messages.fromBot! ? 32 : 16, 16),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
+          crossAxisAlignment: messages.fromBot!
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             InkWell(
               onLongPress: () {
@@ -60,8 +65,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               },
               child: Container(
                   key: _containerKey, // Assign the key to the Container
-
-                  width: MediaQuery.sizeOf(context).width,
+                  width: MediaQuery.sizeOf(context).width * 0.8,
                   decoration: BoxDecoration(
                     color: messages.fromBot!
                         ? Colors.white
@@ -72,101 +76,135 @@ class _ChatBubbleState extends State<ChatBubble> {
                             Radius.circular(messages.fromBot! ? 0 : 10)),
                   ),
                   padding: const EdgeInsets.all(16),
-                  child: messages.fromBot! && messages.id == null
-                      ? BlocProvider(
-                          create: (context) => SendMessageBloc()
-                            ..add(SendMessageRequest(
-                                request: SendMessageModel(
-                                    botId: HomeCubit.bot!.id,
-                                    model: HomeCubit.bot!.name,
-                                    id: HomeCubit.chatId.value != -1 &&
-                                            HomeCubit.chatId.value != -2
-                                        ? HomeCubit.chatId.value
-                                        : null,
-                                    query: messages.content))),
-                          child:
-                              BlocConsumer<SendMessageBloc, SendMessageState>(
-                            listener: (context, state) {
-                              if (state is SendMessageSuccess) {
-                                if (state.model.chatId != null) {
-                                  if (HomeCubit.chatId.value == -1 ||
-                                      HomeCubit.chatId.value == -2) {
-                                    HomeCubit.chatId.value = state.model.chatId;
-                                    context.read<ChatsHistoryBloc>().add(
-                                        AddChat(
-                                            chats: Chats(
-                                                bot: HomeCubit.bot,
-                                                createdAt: DateTime.now()
-                                                    .toIso8601String(),
-                                                id: state.model.chatId,
-                                                title: state.model.chatTitle ??
-                                                    'new')));
-                                  }
-                                }
-                                if (state.model.humanMessageId != null) {
-                                  context.read<HomeCubit>().changeHumanItemId(
-                                      state.model.humanMessageId);
-                                  context.read<RelatedQuestionsBloc>().add(
-                                      GetAllRelatedQuestions(
-                                          chatId: HomeCubit.chatId.value!,
-                                          messageId:
-                                              state.model.humanMessageId!,
-                                          content: messages.content!));
-                                }
-                                if (state.model.aiMessageId != null) {
-                                  messages = context
-                                      .read<HomeCubit>()
-                                      .changeItem(
-                                          messages,
-                                          messages.copyWith(
-                                              id: state.model.aiMessageId,
-                                              content: state.response));
-                                }
-
-                                if (state.model.content != null) {
-                                  messageCopy = state.model.content!;
-                                }
-                              }
-                            },
-                            builder: (context, state) {
-                              return Column(
-                                children: [
-                                  DefaultMarkdownText(
-                                    text: state is SendMessageLoading
-                                        ? state.response
-                                        : state is SendMessageSuccess
-                                            ? state.response
-                                            : '',
-                                    color: messages.fromBot!
-                                        ? AppColors.black.defaultShade
-                                        : Colors.white,
-                                  ),
-                                  state is SendMessageSuccess
-                                      ? messageActions()
-                                      : SpinKitThreeBounce(
-                                          size: 18,
-                                          color: AppColors
-                                              .primaryColor.defaultShade,
-                                        )
-                                ],
-                              );
-                            },
-                          ),
-                        )
-                      : Column(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (messages.file != null && messages.file!.isImage())
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              width: MediaQuery.sizeOf(context).width,
-                              child: DefaultMarkdownText(
-                                text: messages.content ?? '',
-                                color: messages.fromBot!
-                                    ? AppColors.black.defaultShade
-                                    : Colors.white,
+                            Container(
+                              constraints: BoxConstraints(
+                                  maxHeight:
+                                      MediaQuery.sizeOf(context).height * 0.2),
+                              child: AspectRatio(
+                                aspectRatio: 3 / 4,
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.file(
+                                      File(messages.file!.path),
+                                      fit: BoxFit.cover,
+                                    )),
                               ),
                             ),
-                            messageActions()
                           ],
-                        )),
+                        ),
+                      messages.fromBot! && messages.id == null
+                          ? BlocProvider(
+                              create: (context) => SendMessageBloc()
+                                ..add(SendMessageRequest(
+                                    request: SendMessageModel(
+                                        botId: HomeCubit.bot.value!.id,
+                                        model: HomeCubit.bot.value!.name,
+                                        id: HomeCubit.chatId.value != -1 &&
+                                                HomeCubit.chatId.value != -2
+                                            ? HomeCubit.chatId.value
+                                            : null,
+                                        query: messages.content,
+                                        file: HomeCubit.selectedFile.value))),
+                              child: BlocConsumer<SendMessageBloc,
+                                  SendMessageState>(
+                                listener: (context, state) {
+                                  if (state is SendMessageSuccess) {
+                                    if (state.model.chatId != null) {
+                                      if (HomeCubit.chatId.value == -1 ||
+                                          HomeCubit.chatId.value == -2) {
+                                        HomeCubit.chatId.value =
+                                            state.model.chatId;
+                                        context.read<ChatsHistoryBloc>().add(
+                                            AddChat(
+                                                chats: Chats(
+                                                    bot: HomeCubit.bot.value,
+                                                    createdAt: DateTime.now()
+                                                        .toIso8601String(),
+                                                    id: state.model.chatId,
+                                                    title:
+                                                        state.model.chatTitle ??
+                                                            'new')));
+                                      }
+                                    }
+                                    if (state.model.humanMessageId != null) {
+                                      context
+                                          .read<HomeCubit>()
+                                          .changeHumanItemId(
+                                              state.model.humanMessageId);
+                                      context.read<RelatedQuestionsBloc>().add(
+                                          GetAllRelatedQuestions(
+                                              chatId: HomeCubit.chatId.value!,
+                                              messageId:
+                                                  state.model.humanMessageId!,
+                                              content: messages.content!));
+                                    }
+                                    if (state.model.aiMessageId != null) {
+                                      messages = context
+                                          .read<HomeCubit>()
+                                          .changeItem(
+                                              messages,
+                                              messages.copyWith(
+                                                  id: state.model.aiMessageId,
+                                                  content: state.response));
+                                    }
+
+                                    if (state.model.content != null) {
+                                      messageCopy = state.model.content!;
+                                    }
+                                  }
+                                  if (state is SendMessageLoading) {
+                                    if (HomeCubit.selectedFile.value !3 -= null) {
+                                      HomeCubit.selectedFile.value = null;
+                                    }
+                                  }
+                                },
+                                builder: (context, state) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      DefaultMarkdownText(
+                                        text: state is SendMessageLoading
+                                            ? state.response
+                                            : state is SendMessageSuccess
+                                                ? state.response
+                                                : '',
+                                        color: messages.fromBot!
+                                            ? AppColors.black.defaultShade
+                                            : Colors.white,
+                                      ),
+                                      state is SendMessageSuccess
+                                          ? messageActions()
+                                          : SpinKitThreeBounce(
+                                              size: 18,
+                                              color: AppColors
+                                                  .primaryColor.defaultShade,
+                                            )
+                                    ],
+                                  );
+                                },
+                              ),
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                DefaultMarkdownText(
+                                  text: messages.content ?? '',
+                                  color: messages.fromBot!
+                                      ? AppColors.black.defaultShade
+                                      : Colors.white,
+                                ),
+                                messageActions()
+                              ],
+                            ),
+                    ],
+                  )),
             ),
             const SizedBox(
               height: 4,
@@ -315,6 +353,7 @@ class _ChatBubbleState extends State<ChatBubble> {
 
   Column messageActions() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(
           height: 12,
@@ -505,7 +544,7 @@ class _ChatBubbleState extends State<ChatBubble> {
               onSelected: (value) async {
                 final list = context.read<HomeCubit>().state;
                 context.read<HomeCubit>().clearItems();
-                HomeCubit.bot = value;
+                HomeCubit.bot.value = value;
                 HomeCubit.chatId.value = -2;
                 context.read<HomeCubit>().addItem(Messages(
                     content: list[list.length - 2].content, role: 'human'));

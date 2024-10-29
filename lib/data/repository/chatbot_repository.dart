@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hoshan/core/services/api/dio_service.dart';
@@ -31,6 +32,12 @@ class ChatbotRepository {
           'retry', (sendMessageModel.retry ?? false).toString().toLowerCase()));
       if (sendMessageModel.id != null) {
         formDatBody.fields.add(MapEntry("id", sendMessageModel.id.toString()));
+      }
+      if (sendMessageModel.file != null) {
+        MultipartFile multipartFile = await MultipartFile.fromFile(
+            sendMessageModel.file!.path,
+            filename: sendMessageModel.file!.name);
+        formDatBody.files.add(MapEntry('image', multipartFile));
       }
 
       Response<ResponseBody> response =
@@ -175,43 +182,24 @@ class ChatbotRepository {
     }
   }
 
-  /*
- static Stream<String> sendMessage(SendMessageModel sendMessageModel) async* {
+  static Future<XFile?> createXFileFromUrl(String url) async {
     try {
-      Response<ResponseBody> response =
-          await _dioService.sendRequestStream.post<ResponseBody>(
-        '/2/gpt-4o',
-        data: true
-            ? {'prompt': "tell me a story"}
-            : SendMessageModel(
-                    model: "gpt-4o-mini", query: "Hello", botId: 1, id: 1)
-                .toJson(),
+      final response = await _dioService.sendRequest.get(
+        url,
+        options: Options(responseType: ResponseType.bytes),
       );
-
-      await for (var value in response.data!.stream) {
-        if (kDebugMode) {
-          print(utf8.decode(value));
-        }
-        yield utf8.decode(value);
+      if (response.statusCode == 200) {
+        // Create an XFile from the bytes
+        Uint8List bytes = response.data; // Get the bytes from the response
+        return XFile.fromData(bytes,
+            name:
+                'file_${DateTime.now().millisecondsSinceEpoch}.txt'); // Customize the name and extension as needed
+      } else {
+        throw Exception('Failed to load file from URL');
       }
     } catch (e) {
-      yield 'Error: $e';
+      print('Error fetching file: $e');
+      return null; // Return null in case of an error
     }
   }
-  */
-
-  /*
-StreamBuilder<String>(
-            stream: ChatbotRepository.sendMessage(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No data available'));
-              } else {
-              ***do your view***
-              }
-  */
 }

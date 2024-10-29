@@ -135,9 +135,13 @@ class _ChatScreenState extends State<ChatScreen> {
               return const SizedBox();
             },
           ),
-          const SizedBox(
-            height: 90,
-          ),
+          ValueListenableBuilder(
+              valueListenable: HomeCubit.selectedFile,
+              builder: (context, val, _) {
+                return SizedBox(
+                  height: val == null ? 90 : 190,
+                );
+              }),
         ],
       ),
     );

@@ -70,7 +70,7 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
               listItemBuilder: listItemView,
               decoration: customDropdownDecoration,
               onChanged: (value) {
-                HomeCubit.bot = value;
+                HomeCubit.bot.value = value;
               },
             ),
           );

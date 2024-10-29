@@ -1,4 +1,6 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:hoshan/data/model/ai/bots_model.dart';
+import 'package:hoshan/data/repository/chatbot_repository.dart';
 
 class MessagesModel {
   int? id;
@@ -41,11 +43,18 @@ class Messages {
   String? id;
   String? content;
   String? role;
+  String? fileUrl;
   bool? like;
   bool? fromBot;
+  XFile? file;
 
-  Messages({this.id, this.content, this.role, this.like}) {
+  Messages({this.id, this.content, this.role, this.like, this.file}) {
     fromBot = (role == 'ai');
+    // _getFile();
+  }
+
+  Future<void> _getFile() async {
+    file = await ChatbotRepository.createXFileFromUrl(fileUrl ?? '');
   }
 
   Messages.fromJson(Map<String, dynamic> json) {
@@ -65,17 +74,14 @@ class Messages {
     return data;
   }
 
-  Messages copyWith({
-    String? id,
-    String? content,
-    String? role,
-    bool? like,
-  }) {
+  Messages copyWith(
+      {String? id, String? content, String? role, bool? like, XFile? file}) {
     return Messages(
       id: id ?? this.id,
       content: content ?? this.content,
       like: like ?? this.like,
       role: role ?? this.role,
+      file: file ?? this.file,
     );
   }
 }
