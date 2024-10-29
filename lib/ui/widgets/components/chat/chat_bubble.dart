@@ -160,7 +160,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                     }
                                   }
                                   if (state is SendMessageLoading) {
-                                    if (HomeCubit.selectedFile.value !3 -= null) {
+                                    if (HomeCubit.selectedFile.value != null) {
                                       HomeCubit.selectedFile.value = null;
                                     }
                                   }
