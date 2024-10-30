@@ -198,7 +198,9 @@ class ChatbotRepository {
         throw Exception('Failed to load file from URL');
       }
     } catch (e) {
-      print('Error fetching file: $e');
+      if (kDebugMode) {
+        print('Error fetching file: $e');
+      }
       return null; // Return null in case of an error
     }
   }

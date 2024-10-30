@@ -5,8 +5,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hoshan/core/gen/assets.gen.dart';
 import 'package:hoshan/core/services/file_manager/pick_file_services.dart';
+import 'package:hoshan/core/utils/crop_image.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class BottomSheetHandler {
   final BuildContext context;
@@ -82,7 +84,9 @@ class BottomSheetHandler {
   }
 
   Future<void> showPickImage(
-      {final bool withAvatar = false, final Function(XFile)? onSelect}) async {
+      {final bool withAvatar = false,
+      final Function(XFile)? onSelect,
+      final bool profile = false}) async {
     await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -97,9 +101,16 @@ class BottomSheetHandler {
                   icon: Assets.icon.outline.camera,
                   title: 'دوربین',
                   onTap: () async {
-                    final file = await PickFileService.getCameraImage();
+                    XFile? file = await PickFileService.getCameraImage();
                     if (file != null) {
-                      onSelect?.call(file);
+                      file = await CropImage().getCroppedFile(
+                          context: context,
+                          sourcePath: file.path,
+                          aspectRatioPresets:
+                              profile ? CropAspectRatioPreset.square : null);
+                      if (file != null) {
+                        onSelect?.call(file);
+                      }
                       Navigator.pop(context);
                     }
                   }),
@@ -113,7 +124,14 @@ class BottomSheetHandler {
                     final file =
                         await PickFileService.getFile(fileType: FileType.image);
                     if (file != null) {
-                      onSelect?.call(file.single);
+                      final croppedFile = await CropImage().getCroppedFile(
+                          context: context,
+                          sourcePath: file.single.path,
+                          aspectRatioPresets:
+                              profile ? CropAspectRatioPreset.square : null);
+                      if (croppedFile != null) {
+                        onSelect?.call(croppedFile);
+                      }
                       Navigator.pop(context);
                     }
                   }),

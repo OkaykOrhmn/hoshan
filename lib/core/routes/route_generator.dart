@@ -10,6 +10,7 @@ import 'package:hoshan/ui/screens/on_boarding/on_boarding_page.dart';
 import 'package:hoshan/ui/screens/setting/cubit/check_username_cubit.dart';
 import 'package:hoshan/ui/screens/setting/edit_profile_page.dart';
 import 'package:hoshan/ui/screens/setting/my_account_page.dart';
+import 'package:hoshan/ui/screens/setting/other_products_page.dart';
 import 'package:hoshan/ui/screens/setting/setting_page.dart';
 import 'package:hoshan/ui/screens/setting/utilization_report_page.dart';
 import 'package:hoshan/ui/screens/splash/splash_page.dart';
@@ -24,6 +25,7 @@ class Routes {
   static const String editProfile = '/edit-profile-page';
   static const String utilizationReport = '/utilization-report-page';
   static const String myAccount = '/my-account-page';
+  static const String otherProducts = '/other-products-page';
 
   static Route<dynamic> routeGenerator(RouteSettings routeSettings) {
     return MaterialPageRoute(
@@ -74,6 +76,8 @@ class Routes {
 
           case myAccount:
             return const MyAccountPage();
+          case otherProducts:
+            return const OtherProductsPage();
 
           default:
             return const SizedBox();

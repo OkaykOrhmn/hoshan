@@ -113,6 +113,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           onTap: () =>
                               BottomSheetHandler(context).showPickImage(
                             withAvatar: true,
+                            profile: true,
                             onSelect: (file) {
                               image.value = file;
                             },

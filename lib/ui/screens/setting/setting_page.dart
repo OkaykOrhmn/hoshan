@@ -238,7 +238,9 @@ class _SettingPageState extends State<SettingPage> {
                     notBorder: true,
                     notMargin: true,
                     notPadding: true,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.otherProducts);
+                    },
                   ),
                   const SizedBox(
                     height: 8,

@@ -198,6 +198,10 @@ class _HomePageState extends State<HomePage> {
                             child: TextField(
                           controller: message,
                           onChanged: (value) {},
+                          enabled: value != null ||
+                              (value != null &&
+                                  value.attachment != 2 &&
+                                  HomeCubit.selectedFile.value != null),
                           decoration: InputDecoration(
                             filled: true,
                             hintText: 'چیزی بنویسید ...',

@@ -65,6 +65,8 @@ dependencies:
   shamsi_date: ^1.0.4
   easy_debounce: ^2.0.3
   markdown_widget: ^2.3.2+6
+  url_launcher: ^6.3.1
+  image_cropper: ^8.0.2
   # http: ^1.2.2
   # pretty_http_logger: ^1.0.4
 
@@ -96,6 +98,7 @@ flutter:
   assets:
     - assets/image/
     - assets/image/boardings/
+    - assets/image/products/
     - assets/image/splash/
     - assets/image/empty/
     - assets/icon/

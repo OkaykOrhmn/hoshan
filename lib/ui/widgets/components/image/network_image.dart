@@ -21,6 +21,7 @@ class ImageNetwork extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: aspectRatio,
         child: CachedNetworkImage(
+          fit: BoxFit.contain,
           httpHeaders: {
             'Authorization': "Bearer ${DioService.token}",
           },

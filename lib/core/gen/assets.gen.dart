@@ -49,6 +49,9 @@ class $AssetsImageGen {
   /// Directory path: assets/image/empty
   $AssetsImageEmptyGen get empty => const $AssetsImageEmptyGen();
 
+  /// Directory path: assets/image/products
+  $AssetsImageProductsGen get products => const $AssetsImageProductsGen();
+
   /// Directory path: assets/image/splash
   $AssetsImageSplashGen get splash => const $AssetsImageSplashGen();
 
@@ -488,6 +491,39 @@ class $AssetsImageEmptyGen {
       [amount, archive, connection, emptyTextUnderline, inbox, message, server];
 }
 
+class $AssetsImageProductsGen {
+  const $AssetsImageProductsGen();
+
+  /// File path: assets/image/products/Strategic-monitoring.png
+  AssetGenImage get strategicMonitoring =>
+      const AssetGenImage('assets/image/products/Strategic-monitoring.png',
+          size: Size(105.0, 105.0));
+
+  /// File path: assets/image/products/ajhman.png
+  AssetGenImage get ajhman =>
+      const AssetGenImage('assets/image/products/ajhman.png',
+          size: Size(105.0, 106.0));
+
+  /// File path: assets/image/products/online-think.png
+  AssetGenImage get onlineThink =>
+      const AssetGenImage('assets/image/products/online-think.png',
+          size: Size(105.0, 106.0));
+
+  /// File path: assets/image/products/radar.png
+  AssetGenImage get radar =>
+      const AssetGenImage('assets/image/products/radar.png',
+          size: Size(105.0, 106.0));
+
+  /// File path: assets/image/products/risk.png
+  AssetGenImage get risk =>
+      const AssetGenImage('assets/image/products/risk.png',
+          size: Size(105.0, 102.0));
+
+  /// List of all assets
+  List<AssetGenImage> get values =>
+      [strategicMonitoring, ajhman, onlineThink, radar, risk];
+}
+
 class $AssetsImageSplashGen {
   const $AssetsImageSplashGen();
 
@@ -541,6 +577,87 @@ class Assets {
 
   static const $AssetsIconGen icon = $AssetsIconGen();
   static const $AssetsImageGen image = $AssetsImageGen();
+}
+
+class AssetGenImage {
+  const AssetGenImage(
+    this._assetName, {
+    this.size,
+    this.flavors = const {},
+  });
+
+  final String _assetName;
+
+  final Size? size;
+  final Set<String> flavors;
+
+  Image image({
+    Key? key,
+    AssetBundle? bundle,
+    ImageFrameBuilder? frameBuilder,
+    ImageErrorWidgetBuilder? errorBuilder,
+    String? semanticLabel,
+    bool excludeFromSemantics = false,
+    double? scale,
+    double? width,
+    double? height,
+    Color? color,
+    Animation<double>? opacity,
+    BlendMode? colorBlendMode,
+    BoxFit? fit,
+    AlignmentGeometry alignment = Alignment.center,
+    ImageRepeat repeat = ImageRepeat.noRepeat,
+    Rect? centerSlice,
+    bool matchTextDirection = false,
+    bool gaplessPlayback = false,
+    bool isAntiAlias = false,
+    String? package,
+    FilterQuality filterQuality = FilterQuality.low,
+    int? cacheWidth,
+    int? cacheHeight,
+  }) {
+    return Image.asset(
+      _assetName,
+      key: key,
+      bundle: bundle,
+      frameBuilder: frameBuilder,
+      errorBuilder: errorBuilder,
+      semanticLabel: semanticLabel,
+      excludeFromSemantics: excludeFromSemantics,
+      scale: scale,
+      width: width,
+      height: height,
+      color: color,
+      opacity: opacity,
+      colorBlendMode: colorBlendMode,
+      fit: fit,
+      alignment: alignment,
+      repeat: repeat,
+      centerSlice: centerSlice,
+      matchTextDirection: matchTextDirection,
+      gaplessPlayback: gaplessPlayback,
+      isAntiAlias: isAntiAlias,
+      package: package,
+      filterQuality: filterQuality,
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+    );
+  }
+
+  ImageProvider provider({
+    AssetBundle? bundle,
+    String? package,
+  }) {
+    return AssetImage(
+      _assetName,
+      bundle: bundle,
+      package: package,
+    );
+  }
+
+  String get path => _assetName;
+
+  String get keyName => _assetName;
 }
 
 class SvgGenImage {

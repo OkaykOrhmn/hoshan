@@ -1,6 +1,5 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:hoshan/data/model/ai/bots_model.dart';
-import 'package:hoshan/data/repository/chatbot_repository.dart';
 
 class MessagesModel {
   int? id;
@@ -53,9 +52,9 @@ class Messages {
     // _getFile();
   }
 
-  Future<void> _getFile() async {
-    file = await ChatbotRepository.createXFileFromUrl(fileUrl ?? '');
-  }
+  // Future<void> _getFile() async {
+  //   file = await ChatbotRepository.createXFileFromUrl(fileUrl ?? '');
+  // }
 
   Messages.fromJson(Map<String, dynamic> json) {
     id = json['id'];
