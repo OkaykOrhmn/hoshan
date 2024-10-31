@@ -45,6 +45,14 @@ class _HomePageState extends State<HomePage> {
 
   final TextEditingController message = TextEditingController();
 
+  PreferredSizeWidget? getAppBAr(int indexed) {
+    PreferredSizeWidget? preferredSizeWidget;
+    if (indexed == 0 || indexed == 1) {
+      preferredSizeWidget = const HomeAppbar();
+    }
+    return preferredSizeWidget;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -71,7 +79,7 @@ class _HomePageState extends State<HomePage> {
             },
             child: Scaffold(
               resizeToAvoidBottomInset: indexed == 0,
-              appBar: const HomeAppbar(),
+              appBar: getAppBAr(indexed),
               body: IndexedStack(
                 index: indexed,
                 children: [
@@ -168,29 +176,41 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        CircleIconBtn(
-                          icon: Assets.icon.bold.send,
-                          onTap: () async {
-                            if (SendMessageBloc.onResponse.value) return;
-                            if (message.text.isNotEmpty &&
-                                HomeCubit.bot.value != null) {
-                              HomeCubit.chatId.value ??= -2;
-                              context.read<HomeCubit>().addItem(Messages(
-                                  content: [Content(text: message.text)],
-                                  role: 'human',
-                                  file: HomeCubit.selectedFile.value));
-                              context.read<HomeCubit>().addItem(Messages(
-                                    role: 'ai',
-                                    content: [Content(text: message.text)],
-                                  ));
+                        ValueListenableBuilder(
+                            valueListenable: message,
+                            builder: (context, val, _) {
+                              if (val.text.isEmpty) {
+                                return CircleIconBtn(
+                                  icon: Assets.icon.outline.microphoneChat,
+                                  onTap: () {},
+                                );
+                              }
+                              return CircleIconBtn(
+                                icon: Assets.icon.bold.send,
+                                onTap: () async {
+                                  if (SendMessageBloc.onResponse.value) return;
+                                  if (message.text.isNotEmpty &&
+                                      HomeCubit.bot.value != null) {
+                                    HomeCubit.chatId.value ??= -2;
+                                    context.read<HomeCubit>().addItem(Messages(
+                                        content: [Content(text: message.text)],
+                                        role: 'human',
+                                        file: HomeCubit.selectedFile.value));
+                                    context.read<HomeCubit>().addItem(Messages(
+                                          role: 'ai',
+                                          content: [
+                                            Content(text: message.text)
+                                          ],
+                                        ));
 
-                              message.clear();
-                              context
-                                  .read<RelatedQuestionsBloc>()
-                                  .add(ClearAllRelatedQuestions());
-                            }
-                          },
-                        ),
+                                    message.clear();
+                                    context
+                                        .read<RelatedQuestionsBloc>()
+                                        .add(ClearAllRelatedQuestions());
+                                  }
+                                },
+                              );
+                            }),
                         const SizedBox(
                           width: 4,
                         ),

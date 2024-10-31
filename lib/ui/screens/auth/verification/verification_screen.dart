@@ -177,6 +177,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               return LoadingButton(
                                   width: MediaQuery.sizeOf(context).width,
                                   height: 48,
+                                  radius: 100,
                                   loading: state is RegisterLoading,
                                   onPressed: () async {
                                     if (context

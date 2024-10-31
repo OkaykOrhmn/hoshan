@@ -128,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: LoadingButton(
                   width: MediaQuery.sizeOf(context).width,
                   height: 48,
+                  radius: 100,
                   loading: state is LoginLoading,
                   onPressed: typeUser && typePassword
                       ? () {

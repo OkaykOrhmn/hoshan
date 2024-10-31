@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
+import 'package:hoshan/ui/widgets/components/audio/player.dart';
+import 'package:hoshan/ui/widgets/components/audio/recorder.dart';
 import 'package:hoshan/ui/widgets/components/dropdown/bots_search_dropdown.dart';
 import 'package:hoshan/ui/widgets/components/slider/carousle_slider_banners.dart';
 

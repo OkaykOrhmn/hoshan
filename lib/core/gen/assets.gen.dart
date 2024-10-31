@@ -284,6 +284,14 @@ class $AssetsIconOutlineGen {
       const SvgGenImage('assets/icon/outline/notification-bing.svg',
           size: Size(20.0, 20.0));
 
+  /// File path: assets/icon/outline/pause.svg
+  SvgGenImage get pause => const SvgGenImage('assets/icon/outline/pause.svg',
+      size: Size(24.0, 24.0));
+
+  /// File path: assets/icon/outline/play.svg
+  SvgGenImage get play =>
+      const SvgGenImage('assets/icon/outline/play.svg', size: Size(24.0, 24.0));
+
   /// File path: assets/icon/outline/profile-tick.svg
   SvgGenImage get profileTick =>
       const SvgGenImage('assets/icon/outline/profile-tick.svg',
@@ -327,6 +335,10 @@ class $AssetsIconOutlineGen {
   SvgGenImage get stopCircle =>
       const SvgGenImage('assets/icon/outline/stop-circle.svg',
           size: Size(24.0, 24.0));
+
+  /// File path: assets/icon/outline/stop.svg
+  SvgGenImage get stop =>
+      const SvgGenImage('assets/icon/outline/stop.svg', size: Size(24.0, 24.0));
 
   /// File path: assets/icon/outline/sun.svg
   SvgGenImage get sun =>
@@ -395,6 +407,8 @@ class $AssetsIconOutlineGen {
         musicnote,
         news,
         notificationBing,
+        pause,
+        play,
         profileTick,
         profileUserDoual,
         profile,
@@ -404,6 +418,7 @@ class $AssetsIconOutlineGen {
         shieldTick,
         smsTracking,
         stopCircle,
+        stop,
         sun,
         tickCircle,
         toolBox,

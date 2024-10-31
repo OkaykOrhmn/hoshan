@@ -10,6 +10,7 @@ class LoadingButton extends StatelessWidget {
   final double? height;
   final double radius;
   final Color? color;
+  final bool isOutlined;
   const LoadingButton(
       {super.key,
       required this.child,
@@ -18,7 +19,8 @@ class LoadingButton extends StatelessWidget {
       this.width,
       this.height,
       this.color,
-      this.radius = 0});
+      this.radius = 12,
+      this.isOutlined = false});
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +31,14 @@ class LoadingButton extends StatelessWidget {
           height: height,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: color ?? AppColors.primaryColor[100],
+                  backgroundColor: isOutlined
+                      ? Colors.white
+                      : color ?? AppColors.primaryColor[100],
                   shape: RoundedRectangleBorder(
+                      side: isOutlined
+                          ? BorderSide(
+                              color: color ?? const Color(0xFF000000), width: 2)
+                          : BorderSide.none,
                       borderRadius: BorderRadius.circular(radius))),
               onPressed: loading ? () {} : onPressed,
               child: Opacity(opacity: loading ? 0 : 1, child: child)),

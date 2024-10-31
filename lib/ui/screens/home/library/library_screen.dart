@@ -1,7 +1,5 @@
 // ignore_for_file: deprecated_member_use_from_same_package, use_build_context_synchronously
 
-import 'dart:math';
-
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +18,7 @@ import 'package:hoshan/ui/widgets/components/dialog/dialog_handler.dart';
 import 'package:hoshan/ui/widgets/components/text/auth_text_field.dart';
 import 'package:hoshan/ui/widgets/components/text/search_text_field.dart';
 import 'package:hoshan/ui/widgets/sections/empty/empty_states.dart';
+import 'package:hoshan/ui/widgets/sections/header/primary_appbar.dart';
 import 'package:hoshan/ui/widgets/sections/loading/default_placeholder.dart';
 import 'package:hoshan/ui/widgets/sections/loading/listview_placeholder.dart';
 import 'package:shamsi_date/shamsi_date.dart';
@@ -45,19 +44,61 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24.0),
-          child: SearchTextField(
-            controller: searchTextController,
-            suffixIcon: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 12,
-                ),
-                InkWell(
+    return Scaffold(
+      appBar: PrimaryAppbar(
+        titleText: archive ? 'آرشیو شده ها' : 'همه پیام ها',
+        actions: [
+          const SizedBox(
+            width: 16,
+          ),
+          InkWell(
+              onTap: () async {
+                await DialogHandler(context: context).showDeleteItem(
+                  title: 'همه نتایج جستجو پاک شوند؟',
+                  description: '.با این کار اطلاعات شما از بین خواهد رفت',
+                  onConfirm: () {
+                    context
+                        .read<ChatsHistoryBloc>()
+                        .add(RemoveAll(archive: archive));
+                  },
+                );
+              },
+              child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Assets.icon.outline.trash
+                      .svg(color: AppColors.black[300]))),
+          const SizedBox(
+            width: 24,
+          ),
+          InkWell(
+              onTap: () async {
+                archive = !archive;
+                context.read<ChatsHistoryBloc>().add(GetAllChats(
+                    search: searchTextController.text,
+                    date: date,
+                    archive: archive));
+                setState(() {});
+              },
+              child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Assets.icon.outline.directInbox
+                      .svg(color: AppColors.black[300]))),
+          const SizedBox(
+            width: 16,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: SearchTextField(
+              controller: searchTextController,
+              suffixIcon: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: InkWell(
                   onTap: () async {
                     await DialogHandler(context: context).showDatePicker(
                       dateCounts: 1,
@@ -89,178 +130,108 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   },
                   child: Assets.icon.outline.filter.svg(),
                 ),
-                const SizedBox(
-                  width: 12,
-                ),
-                PopupMenuButton<int>(
-                    offset: const Offset(-12, 42),
-                    onSelected: (value) async {
-                      switch (value) {
-                        case 0:
-                          await DialogHandler(context: context).showDeleteItem(
-                            title: 'همه چت ها',
-                            onConfirm: () {
-                              context
-                                  .read<ChatsHistoryBloc>()
-                                  .add(RemoveAll(archive: archive));
-                            },
-                          );
-                          break;
-                        case 1:
-                          archive = !archive;
-                          context.read<ChatsHistoryBloc>().add(GetAllChats(
-                              search: searchTextController.text,
-                              date: date,
-                              archive: archive));
-                          break;
-
-                        default:
-                      }
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    itemBuilder: (context) => <PopupMenuItem<int>>[
-                          PopupMenuItem(
-                              value: 0,
-                              height: 38,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'حذف همه',
-                                    style: AppTextStyles.body4,
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Assets.icon.outline.trash.svg(),
-                                ],
-                              )),
-                          PopupMenuItem(
-                              value: 1,
-                              height: 38,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    archive
-                                        ? 'خارج از آرشیوها'
-                                        : 'نمایش آرشیوها',
-                                    style: AppTextStyles.body4,
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Assets.icon.outline.directInbox.svg(),
-                                ],
-                              ))
-                        ],
-                    child: Transform.rotate(
-                      angle: 90 * pi / 180,
-                      child: Assets.icon.outline.more
-                          .svg(color: AppColors.gray[900]),
-                    )),
-                const SizedBox(
-                  width: 12,
-                ),
-              ],
+              ),
+              onChanged: (searchText) {
+                if (searchText.isEmpty) {
+                  EasyDebounce.cancelAll();
+                  context
+                      .read<ChatsHistoryBloc>()
+                      .add(GetAllChats(date: date, archive: archive));
+                  return;
+                }
+                EasyDebounce.debounce(
+                    'my-debouncer', // <-- An ID for this particular debouncer
+                    const Duration(seconds: 1), // <-- The debounce duration
+                    () {
+                  context.read<ChatsHistoryBloc>().add(GetAllChats(
+                      search: searchText, date: date, archive: archive));
+                } // <-- The target method
+                    );
+              },
             ),
-            onChanged: (searchText) {
-              if (searchText.isEmpty) {
-                EasyDebounce.cancelAll();
-                context
-                    .read<ChatsHistoryBloc>()
-                    .add(GetAllChats(date: date, archive: archive));
-                return;
-              }
-              EasyDebounce.debounce(
-                  'my-debouncer', // <-- An ID for this particular debouncer
-                  const Duration(seconds: 1), // <-- The debounce duration
-                  () {
-                context.read<ChatsHistoryBloc>().add(GetAllChats(
-                    search: searchText, date: date, archive: archive));
-              } // <-- The target method
-                  );
-            },
           ),
-        ),
-        Expanded(
-          child: BlocConsumer<ChatsHistoryBloc, ChatsHistoryState>(
-            listener: (context, state) {},
-            builder: (context, state) {
-              if (state is ChatsHistorySuccess) {
-                return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      ListView.builder(
-                        itemCount: state.chatsInDates.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, allIndex) {
-                          return state.chatsInDates[allIndex].chats.isEmpty
-                              ? const SizedBox()
-                              : Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            state.chatsInDates[allIndex].title,
-                                            style: AppTextStyles.body3.copyWith(
-                                                color: AppColors.black[900],
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
+          Expanded(
+            child: BlocConsumer<ChatsHistoryBloc, ChatsHistoryState>(
+              listener: (context, state) {},
+              builder: (context, state) {
+                if (state is ChatsHistorySuccess) {
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          itemCount: state.chatsInDates.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, allIndex) {
+                            return state.chatsInDates[allIndex].chats.isEmpty
+                                ? const SizedBox()
+                                : Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 16,
                                       ),
-                                    ),
-                                    ListView.builder(
-                                      itemCount: state
-                                          .chatsInDates[allIndex].chats.length,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, chatIndex) {
-                                        final chat = state
-                                            .chatsInDates[allIndex]
-                                            .chats[chatIndex];
-                                        return chatRow(context, chat);
-                                      },
-                                    ),
-                                  ],
-                                );
-                        },
-                      )
-                    ],
-                  ),
-                );
-              } else if (state is ChatsHistoryLoading) {
-                return ListviewPlaceholder(
-                    child: Container(
-                  width: MediaQuery.sizeOf(context).width,
-                  height: 58,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8)),
-                ));
-              } else {
-                return Center(
-                  child: EmptyStates.messages(),
-                );
-              }
-            },
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              state
+                                                  .chatsInDates[allIndex].title,
+                                              style: AppTextStyles.body3
+                                                  .copyWith(
+                                                      color:
+                                                          AppColors.black[900],
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      ListView.builder(
+                                        itemCount: state.chatsInDates[allIndex]
+                                            .chats.length,
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, chatIndex) {
+                                          final chat = state
+                                              .chatsInDates[allIndex]
+                                              .chats[chatIndex];
+                                          return chatRow(context, chat);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                          },
+                        )
+                      ],
+                    ),
+                  );
+                } else if (state is ChatsHistoryLoading) {
+                  return ListviewPlaceholder(
+                      child: Container(
+                    width: MediaQuery.sizeOf(context).width,
+                    height: 58,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8)),
+                  ));
+                } else {
+                  return Center(
+                    child: EmptyStates.messages(),
+                  );
+                }
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

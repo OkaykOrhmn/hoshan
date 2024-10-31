@@ -98,6 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: LoadingButton(
                       width: MediaQuery.sizeOf(context).width,
                       height: 48,
+                      radius: 100,
                       loading: state is RegisterLoading,
                       onPressed: canSend
                           ? () {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hoshan/core/gen/assets.gen.dart';
 import 'package:hoshan/ui/theme/colors.dart';
 import 'package:hoshan/ui/theme/text.dart';
+import 'package:hoshan/ui/widgets/components/button/circle_icon_btn.dart';
 import 'package:hoshan/ui/widgets/components/button/loading_button.dart';
 import 'package:hoshan/ui/widgets/components/calender/persian_date_picker.dart';
 import 'package:shamsi_date/shamsi_date.dart';
@@ -55,7 +57,9 @@ class DialogHandler {
   }
 
   Future<void> showDeleteItem(
-      {final String? title, final Function()? onConfirm}) async {
+      {final String? title,
+      final String? description,
+      final Function()? onConfirm}) async {
     await showDialog(
       context: context,
       builder: (context) {
@@ -67,10 +71,33 @@ class DialogHandler {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'از پاک کردن ${title ?? ''} مطمعن هستید؟',
-                  style: AppTextStyles.headline6,
-                  textAlign: TextAlign.right,
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CircleIconBtn(
+                    size: 48,
+                    icon: Assets.icon.outline.trash,
+                    color: AppColors.red[50],
+                    iconColor: AppColors.red[100],
+                    iconPadding: const EdgeInsets.all(12),
+                  ),
+                ),
+                if (title != null)
+                  Text(
+                    title,
+                    style: AppTextStyles.headline6,
+                    textAlign: TextAlign.center,
+                  ),
+                const SizedBox(
+                  height: 4,
+                ),
+                if (description != null)
+                  Text(
+                    description,
+                    style: AppTextStyles.body4,
+                    textAlign: TextAlign.center,
+                  ),
+                const SizedBox(
+                  height: 16,
                 ),
                 Row(
                   children: [
@@ -79,22 +106,8 @@ class DialogHandler {
                       padding: const EdgeInsets.all(8.0),
                       child: LoadingButton(
                         width: MediaQuery.sizeOf(context).width,
-                        radius: 10,
-                        color: AppColors.primaryColor.defaultShade,
-                        child: Text('خیر',
-                            style: AppTextStyles.body4
-                                .copyWith(color: Colors.white)),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    )),
-                    Expanded(
-                        child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: LoadingButton(
-                        width: MediaQuery.sizeOf(context).width,
-                        radius: 10,
+                        radius: 32,
+                        isOutlined: true,
                         color: AppColors.red.defaultShade,
                         onPressed: () {
                           onConfirm?.call();
@@ -102,9 +115,24 @@ class DialogHandler {
                         },
                         child: Text(
                           'بله',
-                          style:
-                              AppTextStyles.body4.copyWith(color: Colors.white),
+                          style: AppTextStyles.body4
+                              .copyWith(color: AppColors.red.defaultShade),
                         ),
+                      ),
+                    )),
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: LoadingButton(
+                        width: MediaQuery.sizeOf(context).width,
+                        radius: 32,
+                        color: AppColors.red.defaultShade,
+                        child: Text('خیر',
+                            style: AppTextStyles.body4
+                                .copyWith(color: Colors.white)),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                       ),
                     )),
                   ],

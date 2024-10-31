@@ -49,6 +49,18 @@ class Messages {
 
   Messages({this.id, this.content, this.role, this.like, this.file}) {
     fromBot = (role == 'ai');
+    if (content != null && content!.isNotEmpty) {
+      // Sort content list: "image" first, then "text"
+      content!.sort((a, b) {
+        if (a.type == 'image_url' && b.type != 'image_url') {
+          return -1; // a comes before b
+        } else if (a.type != 'image_url' && b.type == 'image_url') {
+          return 1; // b comes before a
+        }
+        return 0; // maintain original order if both are the same type
+      });
+    }
+
     // _getFile();
   }
 
@@ -67,6 +79,17 @@ class Messages {
     role = json['role'];
     like = json['like'];
     fromBot = role == 'ai';
+    if (content != null && content!.isNotEmpty) {
+      // Sort content list: "image" first, then "text"
+      content!.sort((a, b) {
+        if (a.type == 'image_url' && b.type != 'image_url') {
+          return -1; // a comes before b
+        } else if (a.type != 'image_url' && b.type == 'image_url') {
+          return 1; // b comes before a
+        }
+        return 0; // maintain original order if both are the same type
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -99,21 +122,38 @@ class Messages {
 class Content {
   String? type;
   String? text;
-  String? imageUrl;
+  ImageUrl? imageUrl;
 
   Content({this.type, this.text, this.imageUrl});
 
   Content.fromJson(Map<String, dynamic> json) {
     type = json['type'];
     text = json['text'];
-    imageUrl = json['image_url'];
+    imageUrl =
+        json['image_url'] != null ? ImageUrl.fromJson(json['image_url']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['type'] = type;
     data['text'] = text;
-    data['image_url'] = imageUrl;
+    if (imageUrl != null) {
+      data['image_url'] = imageUrl!.toJson();
+    }
+    return data;
+  }
+}
+
+class ImageUrl {
+  String? url;
+
+  ImageUrl({this.url});
+  ImageUrl.fromJson(Map<String, dynamic> json) {
+    url = json['url'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['url'] = url;
     return data;
   }
 }

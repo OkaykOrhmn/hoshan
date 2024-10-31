@@ -27,6 +27,7 @@ import 'package:hoshan/ui/widgets/components/chat/cubit/like_message_cubit.dart'
 import 'package:hoshan/ui/widgets/components/dialog/bottom_sheets.dart';
 import 'package:hoshan/ui/widgets/components/dialog/dialog_handler.dart';
 import 'package:hoshan/ui/widgets/components/dropdown/cubit/all_bots_cubit.dart';
+import 'package:hoshan/ui/widgets/components/image/network_image.dart';
 import 'package:hoshan/ui/widgets/components/snackbar/snackbar_handler.dart';
 import 'package:hoshan/ui/widgets/components/text/default_markdown_text.dart';
 import 'package:hoshan/ui/widgets/sections/loading/default_placeholder.dart';
@@ -65,7 +66,10 @@ class _ChatBubbleState extends State<ChatBubble> {
               },
               child: Container(
                   key: _containerKey, // Assign the key to the Container
-                  width: MediaQuery.sizeOf(context).width * 0.8,
+
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.sizeOf(context).width * 0.8,
+                  ),
                   decoration: BoxDecoration(
                     color: messages.fromBot!
                         ? Colors.white
@@ -198,13 +202,51 @@ class _ChatBubbleState extends State<ChatBubble> {
                           : Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                DefaultMarkdownText(
-                                  text: messages.content!.single.text ?? '',
-                                  color: messages.fromBot!
-                                      ? AppColors.black.defaultShade
-                                      : Colors.white,
-                                ),
-                                messageActions()
+                                ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: messages.content!.length,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      final content = messages.content![index];
+                                      return content.type == 'image_url'
+                                          ? Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  constraints: BoxConstraints(
+                                                      maxHeight:
+                                                          MediaQuery.sizeOf(
+                                                                      context)
+                                                                  .height *
+                                                              0.2),
+                                                  child: AspectRatio(
+                                                    aspectRatio: 3 / 4,
+                                                    child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        child: ImageNetwork(
+                                                            url: content
+                                                                    .imageUrl!
+                                                                    .url ??
+                                                                '')),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : DefaultMarkdownText(
+                                              text: messages
+                                                      .content![index].text ??
+                                                  '',
+                                              color: messages.fromBot!
+                                                  ? AppColors.black.defaultShade
+                                                  : Colors.white,
+                                            );
+                                    }),
+                                messageActions(),
                               ],
                             ),
                     ],
@@ -315,7 +357,8 @@ class _ChatBubbleState extends State<ChatBubble> {
             break;
           case 3:
             await DialogHandler(context: context).showDeleteItem(
-              title: 'پیام',
+              title: 'پیام مورد نظر پاک شود؟',
+              description: '.با این کار اطلاعات شما از بین خواهد رفت',
               onConfirm: () async {
                 context.read<HomeCubit>().removeItem(messages);
               },
