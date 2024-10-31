@@ -93,7 +93,7 @@ class _CarousleSliderBannersState extends State<CarousleSliderBanners> {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        AppColors.secondryColor.defaultShade.withOpacity(0.5)),
+                        AppColors.primaryColor.defaultShade.withOpacity(0.5)),
                 child: Text(
                   'بیشتر',
                   style: AppTextStyles.body5.copyWith(

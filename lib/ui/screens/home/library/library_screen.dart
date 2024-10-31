@@ -100,7 +100,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           await DialogHandler(context: context).showDeleteItem(
                             title: 'همه چت ها',
                             onConfirm: () {
-                              context.read<ChatsHistoryBloc>().add(RemoveAll());
+                              context
+                                  .read<ChatsHistoryBloc>()
+                                  .add(RemoveAll(archive: archive));
                             },
                           );
                           break;
@@ -321,7 +323,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         GetAllRelatedQuestions(
                             chatId: HomeCubit.chatId.value!,
                             messageId: humanMessage.id!,
-                            content: humanMessage.content!));
+                            content: humanMessage.content!.single.text!));
                   }
                 },
                 child: Container(

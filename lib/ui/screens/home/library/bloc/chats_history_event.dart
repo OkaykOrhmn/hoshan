@@ -28,4 +28,8 @@ class RemoveChat extends ChatsHistoryEvent {
   const RemoveChat({required this.chats, this.withCall = true});
 }
 
-class RemoveAll extends ChatsHistoryEvent {}
+class RemoveAll extends ChatsHistoryEvent {
+  final bool archive;
+
+  const RemoveAll({required this.archive});
+}

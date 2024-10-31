@@ -176,12 +176,12 @@ class _HomePageState extends State<HomePage> {
                                 HomeCubit.bot.value != null) {
                               HomeCubit.chatId.value ??= -2;
                               context.read<HomeCubit>().addItem(Messages(
-                                  content: message.text,
+                                  content: [Content(text: message.text)],
                                   role: 'human',
                                   file: HomeCubit.selectedFile.value));
                               context.read<HomeCubit>().addItem(Messages(
                                     role: 'ai',
-                                    content: message.text,
+                                    content: [Content(text: message.text)],
                                   ));
 
                               message.clear();

@@ -93,32 +93,34 @@ class _OtherProductsPageState extends State<OtherProductsPage> {
                             const SizedBox(
                               height: 6,
                             ),
-                            if (product.link != null)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  LoadingButton(
-                                      height: 32,
-                                      radius: 46,
-                                      color:
-                                          AppColors.secondryColor.defaultShade,
-                                      onPressed: () async {
-                                        if (!await launchUrl(
-                                          Uri.parse(product.link!),
-                                          mode: LaunchMode.externalApplication,
-                                        )) {
-                                          throw Exception(
-                                              'Could not launch ${product.link}');
-                                        }
-                                      },
-                                      child: Text(
-                                        'ادامه',
-                                        style: AppTextStyles.body4.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
-                                      )),
-                                ],
-                              )
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                LoadingButton(
+                                    height: 32,
+                                    radius: 46,
+                                    color: AppColors.secondryColor.defaultShade,
+                                    onPressed: product.link == null
+                                        ? null
+                                        : () async {
+                                            if (!await launchUrl(
+                                                Uri.parse(product.link!),
+                                                mode: LaunchMode.inAppWebView,
+                                                browserConfiguration:
+                                                    const BrowserConfiguration(
+                                                        showTitle: true))) {
+                                              throw Exception(
+                                                  'Could not launch ${product.link}');
+                                            }
+                                          },
+                                    child: Text(
+                                      'ادامه',
+                                      style: AppTextStyles.body4.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    )),
+                              ],
+                            )
                           ],
                         ))
                       ],

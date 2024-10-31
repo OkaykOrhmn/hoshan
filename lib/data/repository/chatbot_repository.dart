@@ -117,10 +117,10 @@ class ChatbotRepository {
     }
   }
 
-  static Future<Response> deleteAllChats() async {
+  static Future<Response> deleteAllChats({required final bool archive}) async {
     try {
-      final response =
-          await _dioService.sendRequest.delete(DioService.sendMessage);
+      final response = await _dioService.sendRequest
+          .delete(DioService.sendMessage, data: {"archive": archive});
       return response;
     } catch (ex) {
       rethrow;

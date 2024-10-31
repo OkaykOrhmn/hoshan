@@ -130,7 +130,7 @@ class BottomSheetHandler {
                           aspectRatioPresets:
                               profile ? CropAspectRatioPreset.square : null);
                       if (croppedFile != null) {
-                        onSelect?.call(croppedFile);
+                        onSelect?.call(file.single);
                       }
                       Navigator.pop(context);
                     }

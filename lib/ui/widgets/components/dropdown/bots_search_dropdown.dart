@@ -51,6 +51,7 @@ class _BotSearchDropdownState extends State<BotSearchDropdown> {
         listener: (context, state) {},
         builder: (context, state) {
           if (state is AllBotsSuccess) {
+            _list.clear();
             _list.addAll(state.bots);
           }
           if (state is AllBotsFail) {

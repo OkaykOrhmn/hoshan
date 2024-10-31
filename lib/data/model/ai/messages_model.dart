@@ -40,7 +40,7 @@ class MessagesModel {
 
 class Messages {
   String? id;
-  String? content;
+  List<Content>? content;
   String? role;
   String? fileUrl;
   bool? like;
@@ -58,7 +58,12 @@ class Messages {
 
   Messages.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    content = json['content'];
+    if (json['content'] != null) {
+      content = <Content>[];
+      json['content'].forEach((v) {
+        content!.add(Content.fromJson(v));
+      });
+    }
     role = json['role'];
     like = json['like'];
     fromBot = role == 'ai';
@@ -67,14 +72,20 @@ class Messages {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['content'] = content;
+    if (content != null) {
+      data['content'] = content!.map((v) => v.toJson()).toList();
+    }
     data['role'] = role;
     data['like'] = like;
     return data;
   }
 
   Messages copyWith(
-      {String? id, String? content, String? role, bool? like, XFile? file}) {
+      {String? id,
+      List<Content>? content,
+      String? role,
+      bool? like,
+      XFile? file}) {
     return Messages(
       id: id ?? this.id,
       content: content ?? this.content,
@@ -82,5 +93,27 @@ class Messages {
       role: role ?? this.role,
       file: file ?? this.file,
     );
+  }
+}
+
+class Content {
+  String? type;
+  String? text;
+  String? imageUrl;
+
+  Content({this.type, this.text, this.imageUrl});
+
+  Content.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    text = json['text'];
+    imageUrl = json['image_url'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['type'] = type;
+    data['text'] = text;
+    data['image_url'] = imageUrl;
+    return data;
   }
 }

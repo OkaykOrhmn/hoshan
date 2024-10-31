@@ -90,10 +90,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                 state.relatedQuestionsModel.questions![index];
                             return InkWell(
                               onTap: () {
-                                context.read<HomeCubit>().addItem(
-                                    Messages(content: question, role: 'human'));
-                                context.read<HomeCubit>().addItem(
-                                    Messages(role: 'ai', content: question));
+                                context.read<HomeCubit>().addItem(Messages(
+                                    content: [Content(text: question)],
+                                    role: 'human'));
+                                context.read<HomeCubit>().addItem(Messages(
+                                    role: 'ai',
+                                    content: [Content(text: question)]));
 
                                 context
                                     .read<RelatedQuestionsBloc>()

@@ -38,9 +38,6 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
               textDirection: TextDirection.rtl,
             ),
           ),
-          const SizedBox(
-            height: 30000,
-          )
         ],
       ),
     );

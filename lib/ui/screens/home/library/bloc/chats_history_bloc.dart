@@ -131,7 +131,7 @@ class ChatsHistoryBloc extends Bloc<ChatsHistoryEvent, ChatsHistoryState> {
         emit(ChatsHistoryLoading());
 
         try {
-          await ChatbotRepository.deleteAllChats();
+          await ChatbotRepository.deleteAllChats(archive: event.archive);
           chatsInDates.clear();
           HomeCubit.chatId.value = null;
 

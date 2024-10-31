@@ -43,7 +43,7 @@ class ChatBubble extends StatefulWidget {
 }
 
 class _ChatBubbleState extends State<ChatBubble> {
-  late String messageCopy = messages.content ?? '';
+  late String messageCopy = messages.content!.single.text ?? '';
   final GlobalKey _containerKey = GlobalKey();
 
   late Messages messages = widget.message;
@@ -110,7 +110,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                                                 HomeCubit.chatId.value != -2
                                             ? HomeCubit.chatId.value
                                             : null,
-                                        query: messages.content,
+                                        query: messages.content!.single.text,
                                         file: HomeCubit.selectedFile.value))),
                               child: BlocConsumer<SendMessageBloc,
                                   SendMessageState>(
@@ -143,7 +143,8 @@ class _ChatBubbleState extends State<ChatBubble> {
                                               chatId: HomeCubit.chatId.value!,
                                               messageId:
                                                   state.model.humanMessageId!,
-                                              content: messages.content!));
+                                              content: messages
+                                                  .content!.single.text!));
                                     }
                                     if (state.model.aiMessageId != null) {
                                       messages = context
@@ -152,7 +153,10 @@ class _ChatBubbleState extends State<ChatBubble> {
                                               messages,
                                               messages.copyWith(
                                                   id: state.model.aiMessageId,
-                                                  content: state.response));
+                                                  content: [
+                                                    Content(
+                                                        text: state.response)
+                                                  ]));
                                     }
 
                                     if (state.model.content != null) {
@@ -195,7 +199,7 @@ class _ChatBubbleState extends State<ChatBubble> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 DefaultMarkdownText(
-                                  text: messages.content ?? '',
+                                  text: messages.content!.single.text ?? '',
                                   color: messages.fromBot!
                                       ? AppColors.black.defaultShade
                                       : Colors.white,
